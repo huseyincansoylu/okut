@@ -23,18 +23,20 @@ const steps = [
 export default function Home() {
   return (
     <div className="flex flex-1 flex-col">
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
-        <Link href="/" aria-label="Okut ana sayfa">
-          <Logo />
-        </Link>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="?auth=login" scroll={false} className={buttonVariants({ variant: "ghost" })}>
-            Giriş yap
+      <header className="border-b">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
+          <Link href="/" aria-label="Okut ana sayfa">
+            <Logo />
           </Link>
-          <Link href="?auth=signup" scroll={false} className={buttonVariants()}>
-            Ücretsiz başla
-          </Link>
-        </nav>
+          <nav className="flex items-center gap-4 text-sm">
+            <Link href="?auth=login" scroll={false} className={buttonVariants({ variant: "ghost" })}>
+              Giriş yap
+            </Link>
+            <Link href="?auth=signup" scroll={false} className={buttonVariants()}>
+              Ücretsiz başla
+            </Link>
+          </nav>
+        </div>
       </header>
 
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-24 px-6 pb-24">
