@@ -8,6 +8,7 @@ import { categories, products } from "@/db/schema";
 import { requireUserId } from "@/lib/auth";
 import { menuTag } from "@/lib/menu";
 import { getOwnedShop } from "@/lib/shops";
+import { removeMenuImages, uploadMenuImage, validateImage } from "@/lib/storage";
 
 export type ActionState = { error?: string; ok?: boolean } | undefined;
 
@@ -97,8 +98,15 @@ export async function updateCategory(
 
 export async function deleteCategory(categoryId: string): Promise<ActionState> {
   const shopId = await requireShopId();
+  const images = await db
+    .select({ imageUrl: products.imageUrl })
+    .from(products)
+    .innerJoin(categories, eq(categories.id, products.categoryId))
+    .where(and(eq(categories.id, categoryId), eq(categories.shopId, shopId)));
+
   // Products are removed by the ON DELETE CASCADE foreign key.
   await db.delete(categories).where(and(eq(categories.id, categoryId), eq(categories.shopId, shopId)));
+  await removeMenuImages(images.map((i) => i.imageUrl));
   menuChanged(shopId);
   return { ok: true };
 }
@@ -114,6 +122,33 @@ function readProduct(formData: FormData) {
   });
 }
 
+/** The uploaded photo (if any) and whether the existing one should be removed. */
+function readImage(formData: FormData) {
+  const image = formData.get("image");
+  const file = image instanceof File && image.size > 0 ? image : null;
+  const error = file ? validateImage(file) : null;
+  return { file, remove: formData.get("removeImage") === "true", error };
+}
+
+/** Uploads the photo, turning storage failures into a form error. */
+async function tryUpload(shopId: string, file: File): Promise<{ url: string } | { error: string }> {
+  try {
+    return { url: await uploadMenuImage(shopId, file) };
+  } catch (error) {
+    console.error("[storage]", error);
+    return { error: "Fotoğraf yüklenemedi. Lütfen tekrar deneyin." };
+  }
+}
+
+/** Product row scoped to the shop, or undefined if it isn't the owner's. */
+async function findOwnedProduct(productId: string, shopId: string) {
+  const [product] = await db
+    .select({ id: products.id, imageUrl: products.imageUrl })
+    .from(products)
+    .where(and(eq(products.id, productId), inArray(products.categoryId, shopCategoryIds(shopId))));
+  return product;
+}
+
 export async function createProduct(
   categoryId: string,
   _prev: ActionState,
@@ -122,6 +157,8 @@ export async function createProduct(
   const shopId = await requireShopId();
   const parsed = readProduct(formData);
   if (!parsed.success) return firstIssue(parsed.error);
+  const image = readImage(formData);
+  if (image.error) return { error: image.error };
 
   const [category] = await db
     .select({ id: categories.id })
@@ -129,11 +166,24 @@ export async function createProduct(
     .where(and(eq(categories.id, categoryId), eq(categories.shopId, shopId)));
   if (!category) return { error: "Kategori bulunamadı." };
 
-  await db.insert(products).values({
-    ...parsed.data,
-    categoryId,
-    sortOrder: sql`(select coalesce(max(${products.sortOrder}), -1) + 1 from ${products} where ${products.categoryId} = ${categoryId})`,
-  });
+  let imageUrl: string | null = null;
+  if (image.file) {
+    const upload = await tryUpload(shopId, image.file);
+    if ("error" in upload) return upload;
+    imageUrl = upload.url;
+  }
+  try {
+    await db.insert(products).values({
+      ...parsed.data,
+      imageUrl,
+      categoryId,
+      sortOrder: sql`(select coalesce(max(${products.sortOrder}), -1) + 1 from ${products} where ${products.categoryId} = ${categoryId})`,
+    });
+  } catch (error) {
+    await removeMenuImages([imageUrl]);
+    throw error;
+  }
+
   menuChanged(shopId);
   return { ok: true };
 }
@@ -146,14 +196,32 @@ export async function updateProduct(
   const shopId = await requireShopId();
   const parsed = readProduct(formData);
   if (!parsed.success) return firstIssue(parsed.error);
+  const image = readImage(formData);
+  if (image.error) return { error: image.error };
 
-  const updated = await db
-    .update(products)
-    .set(parsed.data)
-    .where(and(eq(products.id, productId), inArray(products.categoryId, shopCategoryIds(shopId))))
-    .returning({ id: products.id });
-  if (updated.length === 0) return { error: "Ürün bulunamadı." };
+  const existing = await findOwnedProduct(productId, shopId);
+  if (!existing) return { error: "Ürün bulunamadı." };
 
+  let imageUrl = existing.imageUrl;
+  if (image.file) {
+    const upload = await tryUpload(shopId, image.file);
+    if ("error" in upload) return upload;
+    imageUrl = upload.url;
+  } else if (image.remove) {
+    imageUrl = null;
+  }
+
+  try {
+    await db
+      .update(products)
+      .set({ ...parsed.data, imageUrl })
+      .where(eq(products.id, existing.id));
+  } catch (error) {
+    if (image.file) await removeMenuImages([imageUrl]);
+    throw error;
+  }
+
+  if (imageUrl !== existing.imageUrl) await removeMenuImages([existing.imageUrl]);
   menuChanged(shopId);
   return { ok: true };
 }
@@ -170,9 +238,11 @@ export async function setProductAvailability(productId: string, isAvailable: boo
 
 export async function deleteProduct(productId: string): Promise<ActionState> {
   const shopId = await requireShopId();
-  await db
+  const [deleted] = await db
     .delete(products)
-    .where(and(eq(products.id, productId), inArray(products.categoryId, shopCategoryIds(shopId))));
+    .where(and(eq(products.id, productId), inArray(products.categoryId, shopCategoryIds(shopId))))
+    .returning({ imageUrl: products.imageUrl });
+  await removeMenuImages([deleted?.imageUrl]);
   menuChanged(shopId);
   return { ok: true };
 }

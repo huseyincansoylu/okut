@@ -1,7 +1,8 @@
 "use client";
 
 import { useOptimistic, useTransition } from "react";
-import { PencilIcon } from "lucide-react";
+import Image from "next/image";
+import { ImageIcon, PencilIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -24,6 +25,13 @@ export function ProductRow({ product }: { product: Product }) {
 
   return (
     <li className="flex items-center gap-3 py-3">
+      <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
+        {product.imageUrl ? (
+          <Image src={product.imageUrl} alt="" width={48} height={48} className="size-full object-cover" />
+        ) : (
+          <ImageIcon className="size-4 text-muted-foreground" />
+        )}
+      </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className={isAvailable ? "font-medium" : "font-medium text-muted-foreground line-through"}>

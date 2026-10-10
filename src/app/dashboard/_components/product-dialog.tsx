@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Product } from "@/db/schema";
 import { priceInputValue } from "@/lib/format";
 import { createProduct, updateProduct, type ActionState } from "../menu-actions";
+import { ImageField } from "./image-field";
 
 type Props = { trigger: ReactElement } & (
   | { mode: "create"; categoryId: string; product?: never }
@@ -29,7 +30,7 @@ export function ProductDialog(props: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={props.trigger} />
-      <DialogContent>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{props.mode === "create" ? "Ürün ekle" : "Ürünü düzenle"}</DialogTitle>
         </DialogHeader>
@@ -50,6 +51,7 @@ function ProductForm({ mode, categoryId, product, onDone }: Props & { onDone: ()
     return result;
   }, undefined);
   const [isAvailable, setIsAvailable] = useState(product?.isAvailable ?? true);
+  const [imageBusy, setImageBusy] = useState(false);
 
   return (
     <form action={action} className="grid gap-4">
@@ -57,6 +59,7 @@ function ProductForm({ mode, categoryId, product, onDone }: Props & { onDone: ()
         <Label htmlFor="product-name">Ürün adı</Label>
         <Input id="product-name" name="name" required maxLength={80} defaultValue={product?.name} autoFocus />
       </div>
+      <ImageField initialUrl={product?.imageUrl} onBusyChange={setImageBusy} />
       <div className="grid gap-2">
         <Label htmlFor="product-description">Açıklama (isteğe bağlı)</Label>
         <Textarea
@@ -88,7 +91,7 @@ function ProductForm({ mode, categoryId, product, onDone }: Props & { onDone: ()
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
 
       <DialogFooter>
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending || imageBusy}>
           {pending ? "Kaydediliyor..." : "Kaydet"}
         </Button>
       </DialogFooter>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { UtensilsCrossedIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -45,16 +47,35 @@ async function Menu({ params }: Pick<PageProps<"/menu/[slug]">, "params">) {
                       key={product.id}
                       className={`flex gap-4 py-4 ${product.isAvailable ? "" : "opacity-50"}`}
                     >
+                      {product.imageUrl ? (
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          width={80}
+                          height={80}
+                          sizes="80px"
+                          className="size-20 shrink-0 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <div
+                          aria-hidden
+                          className="flex size-20 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"
+                        >
+                          <UtensilsCrossedIcon className="size-6 opacity-60" />
+                        </div>
+                      )}
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-medium">{product.name}</h3>
-                          {!product.isAvailable && <Badge variant="secondary">Tükendi</Badge>}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="font-medium">{product.name}</h3>
+                            {!product.isAvailable && <Badge variant="secondary">Tükendi</Badge>}
+                          </div>
+                          <span className="shrink-0 font-semibold tabular-nums">{formatPrice(product.price)}</span>
                         </div>
                         {product.description && (
                           <p className="mt-1 text-sm text-muted-foreground">{product.description}</p>
                         )}
                       </div>
-                      <span className="shrink-0 font-semibold tabular-nums">{formatPrice(product.price)}</span>
                     </li>
                   ))}
                 </ul>
