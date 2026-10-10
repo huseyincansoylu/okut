@@ -1,51 +1,101 @@
 # Okut
 
-Dükkanların menü oluşturup kategori, ürün, fiyat ve fotoğraf ekleyebildiği; menüyü QR kod ile paylaşabildiği web uygulaması.
+**QR-code digital menus for cafés and restaurants.** Shop owners build their menu in a dashboard, print a QR table card, and customers scan it to see the live menu in their browser. No app to install, no sign-up.
 
-## Teknolojiler
+The name comes from the Turkish word *okut*: "scan it". The interface is in Turkish because the product targets small businesses in Turkey.
 
-- **Next.js 16** (App Router, Server Actions, Cache Components) + TypeScript
-- **Supabase**: kimlik doğrulama (Auth), PostgreSQL, fotoğraf depolama (Storage)
-- **Drizzle ORM**: şema, migration ve tip güvenli sorgular
-- **Tailwind CSS**
+## Features
 
-## Mimari notlar
+**For shop owners**
+- **Menu management:** create categories and products with prices, descriptions and photos; edit or delete them inline.
+- **Sold-out toggle:** mark an item as unavailable in one click (optimistic UI). It stays on the menu, greyed out with a "Tükendi" (sold out) badge.
+- **Photo uploads:** images are resized and converted to WebP in the browser before upload, so uploads stay small (~100–400 KB) even from a phone camera.
+- **QR codes:** download the menu's QR code as PNG or SVG, or print a ready-made table card.
+- **Overview dashboard:** menu stats, recently edited products, and a "menu health" check that flags products missing photos or descriptions.
 
-- Tüm veritabanı erişimi sunucuda Drizzle ile yapılır. Tablolarda RLS açık ve politika yok; böylece Supabase Data API (anon key) tablolara erişemez.
-- Yetki kontrolü uygulama kodunda yapılır (`src/lib/auth.ts` → `requireUserId`, sorgularda `owner_id` filtresi).
-- `src/proxy.ts` her istekte Supabase oturumunu yeniler ve `/dashboard` altını korur. `/menu/*` sayfaları herkese açıktır.
+**For customers**
+- A fast, mobile-first public menu at `/menu/<shop-slug>`, with sticky category navigation.
+- Served from cache and refreshed as soon as the owner changes something.
 
-## Kurulum
+**Demo:** `pnpm db:seed` creates a read-only sample menu at `/menu/demo-kafe` (5 categories, 20 products, 12 photos).
 
-1. [Supabase](https://supabase.com) üzerinde bir proje oluşturun.
-2. Ortam değişkenlerini ayarlayın:
+## Tech stack
+
+| Area | Technology |
+|---|---|
+| Framework | [Next.js 16](https://nextjs.org) (App Router, Server Components, Server Actions, Cache Components), React 19, TypeScript |
+| Backend | [Supabase](https://supabase.com): Auth, PostgreSQL, Storage |
+| Database access | [Drizzle ORM](https://orm.drizzle.team) with SQL migrations |
+| Validation | [Zod](https://zod.dev) |
+| UI | [Tailwind CSS 4](https://tailwindcss.com), [shadcn/ui](https://ui.shadcn.com) on [Base UI](https://base-ui.com), [Lucide](https://lucide.dev) icons |
+| QR codes | [qrcode](https://github.com/soldair/node-qrcode) |
+
+## Architecture & security
+
+- **Server-only data access.** Every query runs on the server through Drizzle. Row Level Security is enabled on every table with no policies, so the public Supabase Data API (anon/publishable key) cannot read or write any table.
+- **Authorization in code.** Each Server Action resolves the signed-in user's shop and scopes every read and write to it (`requireUserId` → `getOwnedShop` → `shop_id` filters). A user can never touch another shop's data.
+- **Input validation.** All form input is validated with Zod on the server, including Turkish-formatted prices (`1.250,50` → `1250.50`).
+- **Secure uploads.** Photos are uploaded server-side with the Supabase secret key, only after the ownership check, with type (WebP/JPEG/PNG) and size (2 MB) limits enforced both in the app and on the storage bucket. Replaced or deleted photos are removed from storage.
+- **Caching.** Public menus use Next.js `"use cache"` with per-shop cache tags; owner edits call `updateTag()`, so customers see changes immediately while unchanged menus are served from cache.
+- **Session handling.** `src/proxy.ts` refreshes the Supabase session on each request and protects `/dashboard`. Public menu routes skip it entirely.
+- **Read-only demo.** The demo shop has no owner (`owner_id` is `NULL`). No account can resolve it as "their" shop, so it cannot be edited through the app.
+
+## Project structure
+
+```
+src/
+├── app/
+│   ├── page.tsx                # Landing page
+│   ├── auth/                   # Sign-in / sign-up Server Actions, email confirmation
+│   ├── dashboard/              # Owner dashboard: overview, menu editor, QR codes
+│   └── menu/[slug]/            # Public, cached customer menu
+├── components/                 # Auth dialog and shadcn/ui primitives
+├── db/                         # Drizzle schema and client
+└── lib/                        # Auth, storage, caching, QR and formatting helpers
+drizzle/                        # SQL migrations
+scripts/                        # Demo menu seed script and photos
+```
+
+## Getting started
+
+**Requirements:** Node.js 20+, pnpm, and a free [Supabase](https://supabase.com) project.
+
+1. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
+2. **Configure environment variables**
    ```bash
    cp .env.example .env.local
    ```
-   Değerleri Supabase panelindeki **Connect** ve **Project Settings → API** bölümlerinden doldurun.
-3. Paketleri kurup migration'ları uygulayın:
+   Fill in the values from your Supabase dashboard (**Connect** and **Project Settings → API Keys**). `SUPABASE_SECRET_KEY` is used on the server only and must never be exposed to the browser.
+3. **Run the database migrations.** This creates the tables and the `menu-images` storage bucket.
    ```bash
-   pnpm install
    pnpm db:migrate
    ```
-4. Geliştirme sunucusunu başlatın:
+4. **(Optional) Seed the demo menu**
+   ```bash
+   pnpm db:seed
+   ```
+5. **Start the development server**
    ```bash
    pnpm dev
    ```
+   Open [http://localhost:3000](http://localhost:3000).
 
-## Örnek menü
+## Scripts
 
-`pnpm db:seed` herkese açık, salt okunur bir örnek menü oluşturur: `/menu/demo-kafe` (5 kategori, 20 ürün).
-Dükkanın sahibi yok, bu yüzden hiçbir hesap onu düzenleyemez. Tekrar çalıştırmak menüyü baştan yazar; URL değişmez.
-
-## Komutlar
-
-| Komut | Açıklama |
+| Command | Description |
 |---|---|
-| `pnpm dev` | Geliştirme sunucusu |
-| `pnpm build` | Production derlemesi |
-| `pnpm lint` / `pnpm typecheck` | Lint ve tip kontrolü |
-| `pnpm db:generate` | Şema değişikliğinden migration üretir |
-| `pnpm db:migrate` | Migration'ları veritabanına uygular |
-| `pnpm db:studio` | Drizzle Studio (veritabanı arayüzü) |
-| `pnpm db:seed` | Salt okunur örnek menüyü (`/menu/demo-kafe`) oluşturur |
+| `pnpm dev` | Start the development server |
+| `pnpm build` / `pnpm start` | Build and run the production app |
+| `pnpm lint` | Run ESLint |
+| `pnpm typecheck` | Generate route types and run the TypeScript compiler |
+| `pnpm db:generate` | Generate a migration from schema changes |
+| `pnpm db:migrate` | Apply migrations to the database |
+| `pnpm db:studio` | Open Drizzle Studio |
+| `pnpm db:seed` | Create or refresh the read-only demo menu |
+
+## Credits
+
+Demo menu photos are from [Unsplash](https://unsplash.com), used under the [Unsplash License](https://unsplash.com/license). Photographers are credited in [`scripts/demo-images/CREDITS.md`](scripts/demo-images/CREDITS.md).
