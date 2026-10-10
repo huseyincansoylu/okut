@@ -7,16 +7,16 @@ import { db } from "@/db";
 import { categories, products, type Product } from "@/db/schema";
 import { requireUserId } from "@/lib/auth";
 import { getOwnedShop } from "@/lib/shops";
-import { CreateShopForm } from "../create-shop-form";
 import { AddCategoryForm } from "./add-category-form";
 import { CategoryHeader } from "./category-header";
+import { NoShop } from "./no-shop";
+import { PageBody, PageHeader } from "./page-header";
 import { ProductDialog } from "./product-dialog";
 import { ProductRow } from "./product-row";
-import { QrCard } from "./qr-card";
 
 export async function MenuEditor() {
   const shop = await getOwnedShop(await requireUserId());
-  if (!shop) return <CreateShopForm />;
+  if (!shop) return <NoShop />;
 
   const categoryRows = await db
     .select()
@@ -35,21 +35,17 @@ export async function MenuEditor() {
   const productsByCategory = Map.groupBy(productRows, (p: Product) => p.categoryId);
 
   return (
-    <div className="flex flex-col gap-6">
-      <section className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="font-heading text-xl font-semibold">{shop.name}</h2>
-          <p className="text-sm text-muted-foreground">
-            {categoryRows.length} kategori · {productRows.length} ürün
-          </p>
-        </div>
-        <Link href={`/menu/${shop.slug}`} target="_blank" className={buttonVariants({ variant: "outline" })}>
-          Menüyü görüntüle
-          <ExternalLinkIcon />
-        </Link>
-      </section>
-
-      <QrCard shop={shop} />
+    <PageBody>
+      <PageHeader
+        title="Menü"
+        description={`${categoryRows.length} kategori · ${productRows.length} ürün`}
+        actions={
+          <Link href={`/menu/${shop.slug}`} target="_blank" className={buttonVariants({ variant: "outline" })}>
+            Menüyü görüntüle
+            <ExternalLinkIcon />
+          </Link>
+        }
+      />
 
       <AddCategoryForm />
 
@@ -90,6 +86,6 @@ export async function MenuEditor() {
           );
         })
       )}
-    </div>
+    </PageBody>
   );
 }

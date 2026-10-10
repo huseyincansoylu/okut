@@ -7,7 +7,7 @@ export function PrintButton() {
   return (
     <Button size="sm" onClick={() => window.print()}>
       <PrinterIcon />
-      Yazdır
+      Masa kartını yazdır
     </Button>
   );
 }

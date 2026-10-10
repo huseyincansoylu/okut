@@ -1,5 +1,6 @@
 import "server-only";
 import { eq } from "drizzle-orm";
+import { cache } from "react";
 import { db } from "@/db";
 import { shops } from "@/db/schema";
 
@@ -32,8 +33,8 @@ export async function createShop(ownerId: string, name: string) {
   throw new Error("Could not generate a unique shop slug");
 }
 
-/** The signed-in owner's shop, or null if they haven't created one yet. */
-export async function getOwnedShop(ownerId: string) {
+/** The signed-in owner's shop, or null if they haven't created one yet. Deduped per request. */
+export const getOwnedShop = cache(async (ownerId: string) => {
   const [shop] = await db.select().from(shops).where(eq(shops.ownerId, ownerId)).limit(1);
   return shop ?? null;
-}
+});

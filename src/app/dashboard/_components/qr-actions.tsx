@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { CheckIcon, CopyIcon, DownloadIcon, PrinterIcon } from "lucide-react";
-import Link from "next/link";
+import { CheckIcon, CopyIcon, DownloadIcon } from "lucide-react";
 import QRCode from "qrcode";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 function download(href: string, filename: string) {
   const a = document.createElement("a");
@@ -52,10 +51,6 @@ export function QrActions({ url, svg, slug }: { url: string; svg: string; slug: 
           <DownloadIcon />
           SVG
         </Button>
-        <Link href="/dashboard/qr" target="_blank" className={buttonVariants({ variant: "outline", size: "sm" })}>
-          <PrinterIcon />
-          Masa kartı yazdır
-        </Link>
       </div>
     </div>
   );

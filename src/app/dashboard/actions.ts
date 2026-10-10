@@ -1,7 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { refresh } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
 import { shops } from "@/db/schema";
@@ -22,5 +22,5 @@ export async function createMyShop(_prev: ShopFormState, formData: FormData): Pr
   if (existing) return { error: "Zaten bir dükkanınız var." };
 
   await createShop(userId, parsed.data);
-  revalidatePath("/dashboard");
+  refresh();
 }
