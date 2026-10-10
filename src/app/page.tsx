@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AuthDialog } from "@/components/auth/auth-dialog";
 import { DemoQr } from "@/components/demo-qr";
 import { Logo } from "@/components/logo";
+import { PhoneMockup } from "@/components/phone-mockup";
 import { SiteFooter } from "@/components/site-footer";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -17,11 +18,6 @@ const steps = [
   "Dükkanının adıyla ücretsiz kayıt ol.",
   "Kategorileri ve ürünleri ekle.",
   "QR kodu masalara koy, menün yayında.",
-];
-
-const demoMenu = [
-  { category: "Sıcak İçecekler", items: [["Türk Kahvesi", "60"], ["Latte", "85"], ["Çay", "20"]] },
-  { category: "Tatlılar", items: [["San Sebastian", "140"], ["Brownie", "110"]] },
 ];
 
 export default function Home() {
@@ -62,25 +58,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mx-auto w-64 rounded-[2.5rem] border-8 border-foreground/90 bg-background p-4 shadow-xl">
-            <p className="text-center text-sm font-semibold">Köşe Kafe</p>
-            <div className="mt-4 flex flex-col gap-4">
-              {demoMenu.map(({ category, items }) => (
-                <div key={category}>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide opacity-60">{category}</p>
-                  <ul className="flex flex-col gap-2">
-                    {items.map(([name, price]) => (
-                      <li key={name} className="flex items-center gap-2 text-sm">
-                        <span className="size-8 shrink-0 rounded-md bg-amber-200/70 dark:bg-amber-500/30" />
-                        <span className="flex-1">{name}</span>
-                        <span className="font-medium">₺{price}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
+          <PhoneMockup />
         </section>
 
         <DemoQr />
