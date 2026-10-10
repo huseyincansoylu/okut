@@ -25,9 +25,9 @@ async function Menu({ params }: Pick<PageProps<"/menu/[slug]">, "params">) {
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <header className="bg-primary px-4 pt-14 pb-12 text-center text-primary-foreground">
+      <header className="bg-emerald-50 px-4 pt-14 pb-12 text-center dark:bg-emerald-950/40">
         <h1 className="font-heading text-4xl font-bold">{menu.shop.name}</h1>
-        <p className="mt-2 text-sm opacity-70">Menü</p>
+        <p className="mt-2 text-sm text-muted-foreground">Menü</p>
       </header>
 
       {menu.sections.length === 0 ? (
