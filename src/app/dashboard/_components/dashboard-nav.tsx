@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboardIcon, QrCodeIcon, UtensilsCrossedIcon } from "lucide-react";
+import { LayoutDashboardIcon, QrCodeIcon, SettingsIcon, UtensilsCrossedIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "cn";
@@ -9,6 +9,7 @@ const items = [
   { href: "/dashboard", label: "Genel bakış", icon: LayoutDashboardIcon },
   { href: "/dashboard/menu", label: "Menü", icon: UtensilsCrossedIcon },
   { href: "/dashboard/qr", label: "QR kod", icon: QrCodeIcon },
+  { href: "/dashboard/settings", label: "Ayarlar", icon: SettingsIcon },
 ] as const;
 
 export function DashboardNav({ className }: { className?: string }) {

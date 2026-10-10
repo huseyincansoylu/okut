@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Suspense } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireUserId } from "@/lib/auth";
@@ -56,6 +57,9 @@ async function QrContent() {
         <section className="flex flex-col items-center gap-3">
           <p className="text-sm text-muted-foreground print:hidden">Masa kartı önizlemesi</p>
           <article className="flex w-[10cm] max-w-full flex-col items-center gap-4 rounded-2xl border bg-white p-8 text-center text-black print:break-inside-avoid">
+            {shop.logoUrl && (
+              <Image src={shop.logoUrl} alt="" width={64} height={64} className="size-16 object-contain" />
+            )}
             <h2 className="font-heading text-2xl font-bold">{shop.name}</h2>
             <div className="w-full [&_svg]:size-full" dangerouslySetInnerHTML={{ __html: svg }} />
             <p className="text-lg font-medium">Menü için QR kodu okutun</p>

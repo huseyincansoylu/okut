@@ -6,15 +6,20 @@ import { Button } from "@/components/ui/button";
 import { compressImage } from "@/lib/compress-image";
 
 /**
- * Photo picker for the product form. The compressed file is placed back into
+ * Photo picker for dashboard forms. The compressed file is placed back into
  * the hidden `image` input so it is submitted with the rest of the FormData.
  */
 export function ImageField({
   initialUrl,
   onBusyChange,
+  label = "Fotoğraf (isteğe bağlı)",
+  fit = "cover",
 }: {
   initialUrl?: string | null;
   onBusyChange?: (busy: boolean) => void;
+  label?: string;
+  /** "contain" keeps logos uncropped. */
+  fit?: "cover" | "contain";
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(initialUrl ?? null);
@@ -61,14 +66,14 @@ export function ImageField({
 
   return (
     <div className="grid gap-2">
-      <span className="text-sm font-medium">Fotoğraf (isteğe bağlı)</span>
+      <span className="text-sm font-medium">{label}</span>
       <div className="flex items-center gap-3">
         <div className="relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
           {busy ? (
             <Loader2Icon className="size-5 animate-spin text-muted-foreground" />
           ) : preview ? (
             // eslint-disable-next-line @next/next/no-img-element -- local blob preview
-            <img src={preview} alt="" className="size-full object-cover" />
+            <img src={preview} alt="" className={`size-full ${fit === "contain" ? "bg-white object-contain p-1" : "object-cover"}`} />
           ) : (
             <ImageIcon className="size-6 text-muted-foreground" />
           )}

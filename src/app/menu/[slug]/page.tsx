@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getPublicMenu, type PublicMenu } from "@/lib/menu";
+import { menuTheme } from "@/lib/menu-themes";
 import { MenuItem } from "./menu-item";
 
 export async function generateMetadata({ params }: PageProps<"/menu/[slug]">): Promise<Metadata> {
@@ -25,9 +27,20 @@ async function Menu({ params }: Pick<PageProps<"/menu/[slug]">, "params">) {
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <header className="bg-emerald-50 px-4 pt-14 pb-12 text-center dark:bg-emerald-950/40">
+      <header className={`px-4 pt-14 pb-12 text-center ${menuTheme(menu.shop.theme).header}`}>
+        {menu.shop.logoUrl && (
+          <Image
+            src={menu.shop.logoUrl}
+            alt={`${menu.shop.name} logosu`}
+            width={96}
+            height={96}
+            sizes="96px"
+            priority
+            className="mx-auto mb-4 size-20 rounded-3xl bg-white object-contain p-1.5 shadow-sm"
+          />
+        )}
         <h1 className="font-heading text-4xl font-bold">{menu.shop.name}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Menü</p>
+        <p className="mt-2 text-sm opacity-60">Menü</p>
       </header>
 
       {menu.sections.length === 0 ? (

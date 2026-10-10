@@ -1,4 +1,5 @@
 import { ExternalLinkIcon, LogOutIcon, StoreIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { signOut } from "@/app/auth/actions";
@@ -42,9 +43,19 @@ async function ShopSummary() {
 
   return (
     <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2 py-1">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-        <StoreIcon className="size-4" />
-      </span>
+      {shop.logoUrl ? (
+        <Image
+          src={shop.logoUrl}
+          alt=""
+          width={32}
+          height={32}
+          className="size-8 shrink-0 rounded-md bg-white object-contain ring-1 ring-foreground/10"
+        />
+      ) : (
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
+          <StoreIcon className="size-4" />
+        </span>
+      )}
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{shop.name}</p>
         <Link

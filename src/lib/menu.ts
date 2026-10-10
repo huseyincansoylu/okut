@@ -11,7 +11,7 @@ export async function getPublicMenu(slug: string) {
   "use cache";
 
   const [shop] = await db
-    .select({ id: shops.id, name: shops.name, slug: shops.slug, logoUrl: shops.logoUrl })
+    .select({ id: shops.id, name: shops.name, slug: shops.slug, logoUrl: shops.logoUrl, theme: shops.theme })
     .from(shops)
     .where(eq(shops.slug, slug))
     .limit(1);

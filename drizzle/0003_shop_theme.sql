@@ -1,0 +1,1 @@
+ALTER TABLE "shops" ADD COLUMN "theme" text DEFAULT 'sage' NOT NULL;

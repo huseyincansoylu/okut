@@ -32,6 +32,8 @@ export const shops = pgTable(
     name: text("name").notNull(),
     slug: text("slug").notNull(),
     logoUrl: text("logo_url"),
+    // Key of a preset from src/lib/menu-themes.ts; unknown keys fall back to the default.
+    theme: text("theme").notNull().default("sage"),
     ...timestamps,
   },
   (t) => [uniqueIndex("shops_slug_idx").on(t.slug), index("shops_owner_idx").on(t.ownerId)],
