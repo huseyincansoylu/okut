@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { DEMO_EMAIL, DEMO_PASSWORD } from "@/lib/demo";
 import { createShop } from "@/lib/shops";
 
 export type AuthState = { error?: string; message?: string } | undefined;
@@ -32,16 +31,6 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
   if (error) return { error: "E-posta veya şifre hatalı." };
 
   redirect(safeNext(formData.get("next")));
-}
-
-export async function signInAsDemo(): Promise<AuthState> {
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
-  if (error) {
-    console.error("[auth] demo sign-in failed:", error.status, error.code);
-    return { error: "Demo hesabına şu an girilemiyor. Lütfen biraz sonra tekrar deneyin." };
-  }
-  redirect("/dashboard");
 }
 
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
