@@ -28,7 +28,7 @@ const CATEGORIES = ["Kahvaltı", "Sıcak İçecekler", "Tatlılar"];
 /** Landing hero illustration: the customer menu inside a phone frame. */
 export function PhoneMockup() {
   return (
-    <div aria-hidden className="relative mx-auto w-[19rem] [zoom:0.8]">
+    <div aria-hidden className="relative mx-auto w-[19rem] [zoom:0.7]">
       {/* Side buttons */}
       <span className="absolute top-28 -left-[3px] h-8 w-[3px] rounded-l bg-neutral-800" />
       <span className="absolute top-40 -left-[3px] h-14 w-[3px] rounded-l bg-neutral-800" />
