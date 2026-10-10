@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { AuthDialog } from "@/components/auth/auth-dialog";
+import { DemoButton } from "@/components/auth/demo-button";
 import { buttonVariants } from "@/components/ui/button";
 
 const features = [
@@ -54,6 +55,7 @@ export default function Home() {
               <Link href="?auth=login" scroll={false} className={buttonVariants({ variant: "outline", size: "lg" })}>
                 Giriş yap
               </Link>
+              <DemoButton />
             </div>
           </div>
 

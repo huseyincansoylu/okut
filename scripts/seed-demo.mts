@@ -11,9 +11,8 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { categories, products, shops } from "../src/db/schema.ts";
+import { DEMO_EMAIL, DEMO_PASSWORD } from "../src/lib/demo.ts";
 
-const DEMO_EMAIL = process.env.DEMO_EMAIL ?? "demo@dijitalmenu.app";
-const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? "demo1234";
 const DEMO_SHOP = { name: "Demo Kafe", slug: "demo-kafe" };
 
 type Item = [name: string, price: string, description?: string, isAvailable?: boolean];
