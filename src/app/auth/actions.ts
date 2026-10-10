@@ -46,10 +46,14 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     options: { emailRedirectTo: `${origin}/auth/confirm` },
   });
   if (error) {
+    console.warn("[auth] sign-up failed:", error.status, error.code);
     if (error.code === "email_address_invalid") {
       return { error: "Bu e-posta adresi kabul edilmedi. Gerçek ve erişebildiğiniz bir adres girin." };
     }
     if (error.code === "user_already_exists") return { error: "Bu e-posta ile zaten kayıt olunmuş." };
+    if (error.status === 429 || error.code?.startsWith("over_")) {
+      return { error: "Çok fazla deneme yapıldı. Lütfen biraz sonra tekrar deneyin." };
+    }
     return { error: error.message };
   }
 

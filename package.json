@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "node --env-file=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-demo.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

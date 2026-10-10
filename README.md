@@ -33,6 +33,11 @@ Dükkanların menü oluşturup kategori, ürün, fiyat ve fotoğraf ekleyebildi�
    pnpm dev
    ```
 
+## Demo
+
+`pnpm db:seed` giriş yapılabilir bir demo hesabı ve 20 ürünlü "Demo Kafe" menüsü oluşturur (`/menu/demo-kafe`).
+Hesap bilgileri `scripts/seed-demo.mts` dosyasının başında; `.env.local` içinde `DEMO_EMAIL` / `DEMO_PASSWORD` ile değiştirilebilir.
+
 ## Komutlar
 
 | Komut | Açıklama |
@@ -43,3 +48,4 @@ Dükkanların menü oluşturup kategori, ürün, fiyat ve fotoğraf ekleyebildi�
 | `pnpm db:generate` | Şema değişikliğinden migration üretir |
 | `pnpm db:migrate` | Migration'ları veritabanına uygular |
 | `pnpm db:studio` | Drizzle Studio (veritabanı arayüzü) |
+| `pnpm db:seed` | Demo hesabı ve örnek menüyü oluşturur |
