@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { AuthDialog } from "@/components/auth/auth-dialog";
 import { DemoQr } from "@/components/demo-qr";
+import { Logo } from "@/components/logo";
+import { SiteFooter } from "@/components/site-footer";
 import { buttonVariants } from "@/components/ui/button";
 
 const features = [
@@ -26,7 +28,9 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col">
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
-        <span className="text-lg font-semibold">Okut</span>
+        <Link href="/" aria-label="Okut ana sayfa">
+          <Logo />
+        </Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link href="?auth=login" scroll={false} className={buttonVariants({ variant: "ghost" })}>
             Giriş yap
@@ -115,6 +119,8 @@ export default function Home() {
           </Link>
         </section>
       </main>
+
+      <SiteFooter />
 
       <Suspense>
         <AuthDialog />
