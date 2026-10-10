@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dijital Menü",
+  title: "Okut",
   description: "Dükkanlar için dijital menü oluşturucu",
 };
 

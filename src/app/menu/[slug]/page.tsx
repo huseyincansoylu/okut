@@ -87,7 +87,7 @@ async function Menu({ params }: Pick<PageProps<"/menu/[slug]">, "params">) {
 
       <footer className="mt-auto px-4 py-8 text-center text-xs text-muted-foreground">
         <Link href="/" className="hover:underline">
-          Dijital Menü ile oluşturuldu
+          Okut ile oluşturuldu
         </Link>
       </footer>
     </div>

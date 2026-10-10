@@ -35,7 +35,7 @@ async function ShopSummary() {
   if (!shop) {
     return (
       <Link href="/dashboard" className="px-2 font-semibold">
-        Dijital Menü
+        Okut
       </Link>
     );
   }

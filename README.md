@@ -1,4 +1,4 @@
-# Dijital Menü
+# Okut
 
 Dükkanların menü oluşturup kategori, ürün, fiyat ve fotoğraf ekleyebildiği; menüyü QR kod ile paylaşabildiği web uygulaması.
 
