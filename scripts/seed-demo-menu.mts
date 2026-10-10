@@ -1,5 +1,5 @@
 /**
- * Creates (or refreshes) the read-only demo menu at /menu/demo-kafe.
+ * Creates (or refreshes) the read-only demo menu at /menu/okut-cafe.
  *
  *   pnpm db:seed
  *
@@ -7,7 +7,7 @@
  * replaces its categories and products but keeps the shop id (and its URL).
  * Photos in scripts/demo-images (see CREDITS.md there) are uploaded to the
  * menu-images bucket under the shop's folder, overwriting earlier copies.
- * The public menu is cached; restart the server / redeploy to see changes.
+ * A refreshed menu is cached; restart the server / redeploy to see changes.
  */
 import { readFile } from "node:fs/promises";
 import { createClient } from "@supabase/supabase-js";
@@ -15,8 +15,7 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { categories, products, shops } from "../src/db/schema.ts";
-
-const DEMO_SHOP = { name: "Demo Kafe", slug: "demo-kafe" };
+import { DEMO_SHOP } from "../src/lib/demo.ts";
 
 type Item = [name: string, price: string, description?: string, isAvailable?: boolean];
 

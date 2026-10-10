@@ -2,7 +2,9 @@ import { ArrowRightIcon } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
 import { AuthDialog } from "@/components/auth/auth-dialog";
+import { DemoQr } from "@/components/demo-qr";
 import { buttonVariants } from "@/components/ui/button";
+import { DEMO_SHOP } from "@/lib/demo";
 
 const features = [
   { title: "Kategoriler", text: "Kahvaltı, içecekler, tatlılar... Menünü istediğin gibi bölümlere ayır." },
@@ -55,7 +57,7 @@ export default function Home() {
               <Link href="?auth=login" scroll={false} className={buttonVariants({ variant: "outline", size: "lg" })}>
                 Giriş yap
               </Link>
-              <Link href="/menu/demo-kafe" target="_blank" className={buttonVariants({ variant: "ghost", size: "lg" })}>
+              <Link href={`/menu/${DEMO_SHOP.slug}`} target="_blank" className={buttonVariants({ variant: "ghost", size: "lg" })}>
                 Örnek menüyü gör
                 <ArrowRightIcon />
               </Link>
@@ -82,6 +84,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <DemoQr />
 
         <section className="flex flex-col gap-8">
           <h2 className="text-2xl font-semibold">Neler yapabilirsin?</h2>

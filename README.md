@@ -17,7 +17,7 @@ The name comes from the Turkish word *okut*: "scan it". The interface is in Turk
 - A fast, mobile-first public menu at `/menu/<shop-slug>`, with sticky category navigation.
 - Served from cache and refreshed as soon as the owner changes something.
 
-**Demo:** `pnpm db:seed` creates a read-only sample menu at `/menu/demo-kafe` (5 categories, 20 products, 12 photos).
+**Live demo:** [okut.vercel.app](https://okut.vercel.app). Scan the QR code on the landing page, or open the sample menu of **Okut Cafe** directly at [okut.vercel.app/menu/okut-cafe](https://okut.vercel.app/menu/okut-cafe). It's a read-only shop created by `pnpm db:seed` (5 categories, 20 products, 12 photos).
 
 ## Tech stack
 

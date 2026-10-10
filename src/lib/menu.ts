@@ -9,14 +9,18 @@ export const menuTag = (shopId: string) => `menu:${shopId}`;
 /** Public menu for a shop slug. Cached until the owner edits the menu (see `updateTag(menuTag(...))`). */
 export async function getPublicMenu(slug: string) {
   "use cache";
-  cacheLife("max");
 
   const [shop] = await db
     .select({ id: shops.id, name: shops.name, slug: shops.slug, logoUrl: shops.logoUrl })
     .from(shops)
     .where(eq(shops.slug, slug))
     .limit(1);
-  if (!shop) return null;
+  if (!shop) {
+    // The shop may be created later (e.g. by the demo seed), so don't keep the miss for long.
+    cacheLife("minutes");
+    return null;
+  }
+  cacheLife("max");
   cacheTag(menuTag(shop.id));
 
   const categoryRows = await db
