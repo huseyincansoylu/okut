@@ -12,6 +12,7 @@ import { AddCategoryForm } from "./add-category-form";
 import { CategoryHeader } from "./category-header";
 import { ProductDialog } from "./product-dialog";
 import { ProductRow } from "./product-row";
+import { QrCard } from "./qr-card";
 
 export async function MenuEditor() {
   const shop = await getOwnedShop(await requireUserId());
@@ -47,6 +48,8 @@ export async function MenuEditor() {
           <ExternalLinkIcon />
         </Link>
       </section>
+
+      <QrCard shop={shop} />
 
       <AddCategoryForm />
 
