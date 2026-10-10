@@ -27,9 +27,8 @@ export const shops = pgTable(
   "shops",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    ownerId: uuid("owner_id")
-      .notNull()
-      .references(() => authUsers.id, { onDelete: "cascade" }),
+    // Null for showcase shops (e.g. the demo menu): no account owns them, so no one can edit them.
+    ownerId: uuid("owner_id").references(() => authUsers.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     slug: text("slug").notNull(),
     logoUrl: text("logo_url"),

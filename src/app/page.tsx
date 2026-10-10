@@ -1,3 +1,4 @@
+import { ArrowRightIcon } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
 import { AuthDialog } from "@/components/auth/auth-dialog";
@@ -53,6 +54,10 @@ export default function Home() {
               </Link>
               <Link href="?auth=login" scroll={false} className={buttonVariants({ variant: "outline", size: "lg" })}>
                 Giriş yap
+              </Link>
+              <Link href="/menu/demo-kafe" target="_blank" className={buttonVariants({ variant: "ghost", size: "lg" })}>
+                Örnek menüyü gör
+                <ArrowRightIcon />
               </Link>
             </div>
           </div>

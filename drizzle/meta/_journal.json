@@ -15,6 +15,13 @@
       "when": 1791643446063,
       "tag": "0001_menu_images_bucket",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791651561884,
+      "tag": "0002_nullable_shop_owner",
+      "breakpoints": true
     }
   ]
 }

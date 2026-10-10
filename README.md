@@ -33,6 +33,11 @@ Dükkanların menü oluşturup kategori, ürün, fiyat ve fotoğraf ekleyebildi�
    pnpm dev
    ```
 
+## Örnek menü
+
+`pnpm db:seed` herkese açık, salt okunur bir örnek menü oluşturur: `/menu/demo-kafe` (5 kategori, 20 ürün).
+Dükkanın sahibi yok, bu yüzden hiçbir hesap onu düzenleyemez. Tekrar çalıştırmak menüyü baştan yazar; URL değişmez.
+
 ## Komutlar
 
 | Komut | Açıklama |
@@ -43,3 +48,4 @@ Dükkanların menü oluşturup kategori, ürün, fiyat ve fotoğraf ekleyebildi�
 | `pnpm db:generate` | Şema değişikliğinden migration üretir |
 | `pnpm db:migrate` | Migration'ları veritabanına uygular |
 | `pnpm db:studio` | Drizzle Studio (veritabanı arayüzü) |
+| `pnpm db:seed` | Salt okunur örnek menüyü (`/menu/demo-kafe`) oluşturur |
