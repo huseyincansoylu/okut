@@ -1,5 +1,5 @@
 // Shared by the proxy, server code and client components, so no server-only imports here.
-export const LOCALES = ["en", "tr"] as const;
+export const LOCALES = ["en", "tr", "es"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 /** Used when the browser prefers neither supported language. */
@@ -9,9 +9,14 @@ export const DEFAULT_LOCALE: Locale = "en";
 export const LOCALE_COOKIE = "NEXT_LOCALE";
 
 /** BCP 47 tags for Intl formatting. */
-export const INTL_LOCALES: Record<Locale, string> = { en: "en-US", tr: "tr-TR" };
+export const INTL_LOCALES: Record<Locale, string> = { en: "en-US", tr: "tr-TR", es: "es-ES" };
 
-export const LOCALE_LABELS: Record<Locale, string> = { en: "EN", tr: "TR" };
+/** Shown in the language menu, each in its own language. */
+export const LOCALE_OPTIONS: Record<Locale, { flag: string; name: string }> = {
+  en: { flag: "🇬🇧", name: "English" },
+  tr: { flag: "🇹🇷", name: "Türkçe" },
+  es: { flag: "🇪🇸", name: "Español" },
+};
 
 export function hasLocale(value: string | undefined): value is Locale {
   return LOCALES.includes(value as Locale);

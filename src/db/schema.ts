@@ -16,7 +16,7 @@ import { authUsers } from "drizzle-orm/supabase";
  * Optional translations of a row's text, keyed by language. The row's own columns
  * hold the original (shop's) text; menus fall back to it when a translation is missing.
  */
-export type Translations = Partial<Record<"en" | "tr", { name?: string; description?: string }>>;
+export type Translations = Partial<Record<"en" | "tr" | "es", { name?: string; description?: string }>>;
 
 const translations = jsonb("translations").$type<Translations>().notNull().default({});
 

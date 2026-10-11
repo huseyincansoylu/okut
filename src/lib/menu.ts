@@ -56,12 +56,17 @@ export async function getPublicMenu(slug: string) {
 
 type RawMenu = NonNullable<Awaited<ReturnType<typeof getPublicMenu>>>;
 
-/** A row's text in `locale`, falling back to the original for missing translations. */
+/**
+ * A row's text in `locale`. Missing translations fall back to English (more widely
+ * read by visitors than the original Turkish), then to the original text.
+ */
 export function localized<T extends { name: string; description?: string | null; translations: Translations }>(
   row: T,
   locale: Locale,
 ) {
-  const translation = row.translations[locale];
+  const own = row.translations[locale];
+  const english = locale === "tr" ? undefined : row.translations.en;
+  const translation = { name: own?.name || english?.name, description: own?.description || english?.description };
   return {
     name: translation?.name || row.name,
     description: translation?.description || row.description || null,

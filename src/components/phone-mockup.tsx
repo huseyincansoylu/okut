@@ -42,9 +42,30 @@ const SECTIONS = {
       ],
     },
   ],
+  es: [
+    {
+      name: "Bebidas calientes",
+      items: [
+        { name: "Café turco", description: "Con delicias turcas", price: 70, image: "/landing/turk-kahvesi.webp" },
+        { name: "Latte", description: "Espresso doble y leche", price: 90, image: "/landing/latte.webp" },
+        { name: "Té turco", description: "En vaso de tulipán", price: 20, image: "/landing/cay.webp" },
+      ],
+    },
+    {
+      name: "Postres",
+      items: [
+        { name: "San Sebastián", description: "Con salsa de chocolate", price: 160, image: "/landing/cheesecake.webp" },
+        { name: "Baklava de pistacho", description: "Con pistachos de Antep", price: 220, image: "/landing/baklava.webp" },
+      ],
+    },
+  ],
 } satisfies Record<Locale, unknown>;
 
-const CATEGORIES = { tr: ["Kahvaltı", "Sıcak İçecekler", "Tatlılar"], en: ["Breakfast", "Hot Drinks", "Desserts"] };
+const CATEGORIES: Record<Locale, string[]> = {
+  tr: ["Kahvaltı", "Sıcak İçecekler", "Tatlılar"],
+  en: ["Breakfast", "Hot Drinks", "Desserts"],
+  es: ["Desayunos", "Bebidas calientes", "Postres"],
+};
 
 /** Landing hero illustration: the customer menu inside a phone frame. */
 export async function PhoneMockup() {

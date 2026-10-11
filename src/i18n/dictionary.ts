@@ -13,6 +13,7 @@ export type Dictionary = Widen<typeof en>;
 const loaders: Record<Locale, () => Promise<Dictionary>> = {
   en: () => import("./dictionaries/en").then((m) => m.default),
   tr: () => import("./dictionaries/tr").then((m) => m.default),
+  es: () => import("./dictionaries/es").then((m) => m.default),
 };
 
 export function loadDictionary(locale: Locale) {

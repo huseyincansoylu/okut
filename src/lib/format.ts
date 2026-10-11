@@ -17,19 +17,24 @@ export function formatPrice(value: string | number, locale: Locale) {
   return formatter.format(Number(value));
 }
 
-/** "1250.50" → "1250,50" (tr) or "1250.50" (en) for editing in a price input. */
+/** Languages that write prices with a decimal comma ("1.250,50"). */
+const DECIMAL_COMMA: ReadonlySet<Locale> = new Set(["tr", "es"]);
+
+/** "1250.50" → "1250,50" (tr, es) or "1250.50" (en) for editing in a price input. */
 export function priceInputValue(value: string, locale: Locale) {
   const trimmed = value.replace(/\.00$/, "");
-  return locale === "tr" ? trimmed.replace(".", ",") : trimmed;
+  return DECIMAL_COMMA.has(locale) ? trimmed.replace(".", ",") : trimmed;
 }
 
 /**
- * Parses a typed price in the visitor's format: "1.250,50" (tr) or "1,250.50" (en).
+ * Parses a typed price in the visitor's format: "1.250,50" (tr, es) or "1,250.50" (en).
  * Returns NaN for anything that isn't a number.
  */
 export function parsePrice(input: string, locale: Locale) {
   const normalized =
-    locale === "tr" && input.includes(",") ? input.replace(/\./g, "").replace(",", ".") : input.replace(/,/g, "");
+    DECIMAL_COMMA.has(locale) && input.includes(",")
+      ? input.replace(/\./g, "").replace(",", ".")
+      : input.replace(/,/g, "");
   return normalized.trim() === "" ? NaN : Number(normalized);
 }
 

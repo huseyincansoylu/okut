@@ -20,7 +20,12 @@ export default async function DashboardLayout({ children }: LayoutProps<"/[lang]
           <Suspense fallback={<div className="h-12 flex-1" />}>
             <ShopSummary />
           </Suspense>
-          <SignOutButton label={dict.common.signOut} className="md:hidden" />
+          <div className="flex shrink-0 items-center gap-1 md:hidden">
+            <Suspense>
+              <LocaleSwitcher />
+            </Suspense>
+            <SignOutButton label={dict.common.signOut} />
+          </div>
         </div>
 
         <DashboardNav className="flex gap-1 overflow-x-auto px-3 pb-3 [scrollbar-width:none] md:flex-col md:px-3 md:pb-0" />
