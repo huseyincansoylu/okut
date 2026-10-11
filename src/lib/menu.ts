@@ -12,7 +12,15 @@ export async function getPublicMenu(slug: string) {
   "use cache";
 
   const [shop] = await db
-    .select({ id: shops.id, name: shops.name, slug: shops.slug, logoUrl: shops.logoUrl, theme: shops.theme })
+    .select({
+      id: shops.id,
+      name: shops.name,
+      slug: shops.slug,
+      logoUrl: shops.logoUrl,
+      theme: shops.theme,
+      currency: shops.currency,
+      menuLanguage: shops.menuLanguage,
+    })
     .from(shops)
     .where(eq(shops.slug, slug))
     .limit(1);
@@ -57,15 +65,18 @@ export async function getPublicMenu(slug: string) {
 type RawMenu = NonNullable<Awaited<ReturnType<typeof getPublicMenu>>>;
 
 /**
- * A row's text in `locale`. Missing translations fall back to English (more widely
- * read by visitors than the original Turkish), then to the original text.
+ * A row's text for a visitor reading `locale`. The row's own text is in `menuLanguage`;
+ * other visitors get their translation, then English (widely read by tourists), then
+ * the original.
  */
 export function localized<T extends { name: string; description?: string | null; translations: Translations }>(
   row: T,
   locale: Locale,
+  menuLanguage: string,
 ) {
+  if (locale === menuLanguage) return { name: row.name, description: row.description || null };
   const own = row.translations[locale];
-  const english = locale === "tr" ? undefined : row.translations.en;
+  const english = row.translations.en;
   const translation = { name: own?.name || english?.name, description: own?.description || english?.description };
   return {
     name: translation?.name || row.name,
@@ -79,10 +90,10 @@ export function localizeMenu(menu: RawMenu, locale: Locale) {
     shop: menu.shop,
     sections: menu.sections.map(({ translations, ...section }) => ({
       ...section,
-      name: localized({ ...section, translations }, locale).name,
+      name: localized({ ...section, translations }, locale, menu.shop.menuLanguage).name,
       products: section.products.map(({ translations, ...product }) => ({
         ...product,
-        ...localized({ ...product, translations }, locale),
+        ...localized({ ...product, translations }, locale, menu.shop.menuLanguage),
       })),
     })),
   };

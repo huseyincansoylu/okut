@@ -6,6 +6,7 @@ import { z } from "zod";
 import type { Dictionary } from "@/i18n/dictionary";
 import { getRequestDictionary, getRequestLocale } from "@/i18n/request";
 import { createClient } from "@/lib/supabase/server";
+import { defaultCurrencyFor, isCurrency } from "@/lib/currency";
 import { createShop } from "@/lib/shops";
 
 export type AuthState = { error?: string; message?: string } | undefined;
@@ -48,6 +49,10 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   const parsed = signUpSchema(dict).safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { email, password, shopName } = parsed.data;
+  const locale = await getRequestLocale();
+  const chosen = formData.get("currency");
+  // Turkish and Spanish sign-ups get TRY / EUR; English ones pick a currency in the form.
+  const currency = isCurrency(chosen) ? chosen : (defaultCurrencyFor(locale) ?? "USD");
 
   const origin = (await headers()).get("origin");
   const supabase = await createClient();
@@ -73,13 +78,13 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   }
 
   try {
-    await createShop(data.user.id, shopName);
+    await createShop(data.user.id, shopName, { currency, menuLanguage: locale });
   } catch {
     // The account exists; the dashboard lets the owner create the shop later.
     console.error("Shop creation failed during sign-up");
   }
 
-  if (data.session) redirect(`/${await getRequestLocale()}/dashboard`);
+  if (data.session) redirect(`/${locale}/dashboard`);
   return { message: dict.auth.confirmEmail };
 }
 

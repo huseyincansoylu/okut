@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useI18n } from "@/i18n/client";
+import { defaultCurrencyFor } from "@/lib/currency";
+import { CurrencySelect } from "../currency-select";
 
 function FormStatus({ state }: { state: { error?: string; message?: string } | undefined }) {
   if (state?.error) return <p className="text-sm text-destructive">{state.error}</p>;
@@ -53,7 +55,8 @@ export function SignInForm({ next }: { next?: string }) {
 }
 
 export function SignUpForm() {
-  const { dict } = useI18n();
+  const { locale, dict } = useI18n();
+  const askCurrency = defaultCurrencyFor(locale) === null;
   const [state, action, pending] = useActionState(signUp, undefined);
 
   return (
@@ -62,6 +65,12 @@ export function SignUpForm() {
         <Label htmlFor="shopName">{dict.auth.shopName}</Label>
         <Input id="shopName" name="shopName" required minLength={2} maxLength={60} placeholder={dict.auth.shopNamePlaceholder} />
       </div>
+      {askCurrency && (
+        <div className="grid gap-2">
+          <Label htmlFor="signup-currency">{dict.auth.currency}</Label>
+          <CurrencySelect id="signup-currency" defaultValue="GBP" />
+        </div>
+      )}
       <EmailPasswordFields newPassword />
       <FormStatus state={state} />
       <Button type="submit" disabled={pending}>

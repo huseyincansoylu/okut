@@ -1,18 +1,22 @@
 import { INTL_LOCALES, type Locale } from "@/i18n/config";
 
-const priceFormatters = new Map<Locale, Intl.NumberFormat>();
+const priceFormatters = new Map<string, Intl.NumberFormat>();
 
-export function formatPrice(value: string | number, locale: Locale) {
-  let formatter = priceFormatters.get(locale);
+/** A price in the shop's currency, written the way the visitor's language does ("€3.50", "3,50 €"). */
+export function formatPrice(value: string | number, locale: Locale, currency: string) {
+  const key = `${locale}:${currency}`;
+  let formatter = priceFormatters.get(key);
   if (!formatter) {
     formatter = new Intl.NumberFormat(INTL_LOCALES[locale], {
       style: "currency",
-      currency: "TRY",
+      currency,
       currencyDisplay: "narrowSymbol",
-      minimumFractionDigits: 0,
+      // "3,50 €" but "650 ₺"
+      minimumFractionDigits: 2,
       maximumFractionDigits: 2,
+      trailingZeroDisplay: "stripIfInteger",
     });
-    priceFormatters.set(locale, formatter);
+    priceFormatters.set(key, formatter);
   }
   return formatter.format(Number(value));
 }

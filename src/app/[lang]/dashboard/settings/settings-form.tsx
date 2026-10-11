@@ -7,12 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CurrencySelect } from "@/components/currency-select";
 import { useI18n } from "@/i18n/client";
+import { LOCALE_OPTIONS, LOCALES } from "@/i18n/config";
 import { MENU_THEMES, menuTheme, type MenuTheme } from "@/lib/menu-themes";
 import { updateShopSettings } from "../actions";
 import { ImageField } from "../_components/image-field";
 
-export function SettingsForm({ shop }: { shop: { name: string; logoUrl: string | null; theme: string } }) {
+type ShopSettings = { name: string; logoUrl: string | null; theme: string; currency: string; menuLanguage: string };
+
+export function SettingsForm({ shop }: { shop: ShopSettings }) {
   const { dict } = useI18n();
   const t = dict.dashboard.settings;
   const [state, action, pending] = useActionState(updateShopSettings, undefined);
@@ -45,6 +49,30 @@ export function SettingsForm({ shop }: { shop: { name: string; logoUrl: string |
           </div>
 
           <ImageField initialUrl={shop.logoUrl} onBusyChange={setImageBusy} label={t.logo} fit="contain" />
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid content-start gap-2">
+              <Label htmlFor="shop-currency">{t.currency}</Label>
+              <CurrencySelect id="shop-currency" defaultValue={shop.currency} />
+              <p className="text-xs text-muted-foreground">{t.currencyHint}</p>
+            </div>
+            <div className="grid content-start gap-2">
+              <Label htmlFor="shop-menu-language">{t.menuLanguage}</Label>
+              <select
+                id="shop-menu-language"
+                name="menuLanguage"
+                defaultValue={shop.menuLanguage}
+                className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+              >
+                {LOCALES.map((l) => (
+                  <option key={l} value={l}>
+                    {LOCALE_OPTIONS[l].flag} {LOCALE_OPTIONS[l].name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground">{t.menuLanguageHint}</p>
+            </div>
+          </div>
 
           <fieldset className="grid gap-2">
             <legend className="mb-2 text-sm font-medium">{t.color}</legend>

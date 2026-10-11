@@ -43,6 +43,11 @@ export const shops = pgTable(
     logoUrl: text("logo_url"),
     // Key of a preset from src/lib/menu-themes.ts; unknown keys fall back to the default.
     theme: text("theme").notNull().default("sage"),
+    // ISO 4217 code from src/lib/currency.ts. Changing it doesn't convert prices.
+    currency: text("currency").notNull().default("TRY"),
+    // Language the owner writes the menu in (a locale from src/i18n/config.ts);
+    // translations cover the other languages.
+    menuLanguage: text("menu_language").notNull().default("tr"),
     ...timestamps,
   },
   (t) => [uniqueIndex("shops_slug_idx").on(t.slug), index("shops_owner_idx").on(t.ownerId)],

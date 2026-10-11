@@ -28,7 +28,7 @@ function Thumbnail({ product, className }: { product: Product; className: string
 }
 
 /** A menu row that opens the product's details: a bottom sheet on phones, a dialog on larger screens. */
-export function MenuItem({ product }: { product: Product }) {
+export function MenuItem({ product, currency }: { product: Product; currency: string }) {
   const { locale, dict } = useI18n();
 
   return (
@@ -44,7 +44,7 @@ export function MenuItem({ product }: { product: Product }) {
                 <h3 className="font-medium">{product.name}</h3>
                 {!product.isAvailable && <Badge variant="secondary">{dict.common.soldOut}</Badge>}
               </div>
-              <span className="shrink-0 font-semibold tabular-nums">{formatPrice(product.price, locale)}</span>
+              <span className="shrink-0 font-semibold tabular-nums">{formatPrice(product.price, locale, currency)}</span>
             </div>
             {product.description && (
               <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{product.description}</p>
@@ -76,7 +76,7 @@ export function MenuItem({ product }: { product: Product }) {
                   <DialogPrimitive.Title className="font-heading text-2xl font-semibold">
                     {product.name}
                   </DialogPrimitive.Title>
-                  <span className="shrink-0 text-xl font-semibold tabular-nums">{formatPrice(product.price, locale)}</span>
+                  <span className="shrink-0 text-xl font-semibold tabular-nums">{formatPrice(product.price, locale, currency)}</span>
                 </div>
                 {!product.isAvailable && (
                   <Badge variant="secondary" className="self-start">

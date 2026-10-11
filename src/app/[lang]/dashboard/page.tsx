@@ -153,7 +153,7 @@ async function Overview() {
                         {product.category} · {formatRelativeTime(product.updatedAt, locale)}
                       </p>
                     </div>
-                    <span className="shrink-0 text-sm font-medium tabular-nums">{formatPrice(product.price, locale)}</span>
+                    <span className="shrink-0 text-sm font-medium tabular-nums">{formatPrice(product.price, locale, shop.currency)}</span>
                   </li>
                 ))}
               </ul>

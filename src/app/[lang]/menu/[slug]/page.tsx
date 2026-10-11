@@ -62,7 +62,7 @@ async function Menu({ params }: Pick<PageProps<"/[lang]/menu/[slug]">, "params">
                 <h2 className="mb-1 font-heading text-xl font-semibold">{section.name}</h2>
                 <ul className="divide-y">
                   {section.products.map((product) => (
-                    <MenuItem key={product.id} product={product} />
+                    <MenuItem key={product.id} product={product} currency={menu.shop.currency} />
                   ))}
                 </ul>
               </section>

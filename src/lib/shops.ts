@@ -3,6 +3,8 @@ import { eq } from "drizzle-orm";
 import { cache } from "react";
 import { db } from "@/db";
 import { shops } from "@/db/schema";
+import type { Locale } from "@/i18n/config";
+import type { Currency } from "@/lib/currency";
 
 const TR_MAP: Record<string, string> = { ç: "c", ğ: "g", ı: "i", İ: "i", ö: "o", ş: "s", ü: "u" };
 
@@ -18,14 +20,18 @@ export function slugify(input: string) {
 }
 
 /** Creates a shop with a unique slug derived from its name. */
-export async function createShop(ownerId: string, name: string) {
+export async function createShop(
+  ownerId: string,
+  name: string,
+  settings: { currency: Currency; menuLanguage: Locale },
+) {
   const base = slugify(name) || "dukkan";
 
   for (let attempt = 0; attempt < 5; attempt++) {
     const slug = attempt === 0 ? base : `${base}-${Math.random().toString(36).slice(2, 6)}`;
     const [shop] = await db
       .insert(shops)
-      .values({ ownerId, name, slug })
+      .values({ ownerId, name, slug, ...settings })
       .onConflictDoNothing({ target: shops.slug })
       .returning();
     if (shop) return shop;

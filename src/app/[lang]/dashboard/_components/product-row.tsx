@@ -12,9 +12,9 @@ import { fill } from "@/i18n/config";
 import { formatPrice } from "@/lib/format";
 import { deleteProduct, setProductAvailability } from "../menu-actions";
 import { ConfirmDelete } from "./confirm-delete";
-import { ProductDialog } from "./product-dialog";
+import { ProductDialog, type MenuSettings } from "./product-dialog";
 
-export function ProductRow({ product }: { product: Product }) {
+export function ProductRow({ product, shop }: { product: Product; shop: MenuSettings }) {
   const { locale, dict } = useI18n();
   const t = dict.dashboard.menu;
   const [, startTransition] = useTransition();
@@ -48,7 +48,7 @@ export function ProductRow({ product }: { product: Product }) {
         )}
       </div>
 
-      <span className="shrink-0 font-medium tabular-nums">{formatPrice(product.price, locale)}</span>
+      <span className="shrink-0 font-medium tabular-nums">{formatPrice(product.price, locale, shop.currency)}</span>
 
       <Switch
         checked={isAvailable}
@@ -58,6 +58,7 @@ export function ProductRow({ product }: { product: Product }) {
       <ProductDialog
         mode="edit"
         product={product}
+        shop={shop}
         trigger={
           <Button variant="ghost" size="icon-sm" aria-label={t.editProduct}>
             <PencilIcon />

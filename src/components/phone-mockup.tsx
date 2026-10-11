@@ -126,7 +126,7 @@ export async function PhoneMockup() {
                         <p className="truncate text-[13px] font-medium">{item.name}</p>
                         <p className="truncate text-[11px] text-muted-foreground">{item.description}</p>
                       </div>
-                      <span className="text-[13px] font-semibold tabular-nums">{formatPrice(item.price, locale)}</span>
+                      <span className="text-[13px] font-semibold tabular-nums">{formatPrice(item.price, locale, "TRY")}</span>
                     </li>
                   ))}
                 </ul>

@@ -20,6 +20,8 @@ export async function MenuEditor() {
   const [shop, locale, dict] = await Promise.all([requireUserId().then(getOwnedShop), getLocale(), getDictionary()]);
   if (!shop) return <NoShop />;
   const t = dict.dashboard.menu;
+  // Only what the client forms need, not the whole shop row.
+  const settings = { currency: shop.currency, menuLanguage: shop.menuLanguage };
 
   const categoryRows = await db
     .select()
@@ -50,7 +52,7 @@ export async function MenuEditor() {
         }
       />
 
-      <AddCategoryForm />
+      <AddCategoryForm showEnglish={shop.menuLanguage !== "en"} />
 
       {categoryRows.length === 0 ? (
         <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
@@ -66,6 +68,7 @@ export async function MenuEditor() {
                   id={category.id}
                   name={category.name}
                   nameEn={category.translations.en?.name ?? ""}
+                  showEnglish={shop.menuLanguage !== "en"}
                   productCount={items.length}
                 />
               </CardHeader>
@@ -73,7 +76,7 @@ export async function MenuEditor() {
                 {items.length > 0 ? (
                   <ul className="divide-y">
                     {items.map((product) => (
-                      <ProductRow key={product.id} product={product} />
+                      <ProductRow key={product.id} product={product} shop={settings} />
                     ))}
                   </ul>
                 ) : (
@@ -82,6 +85,7 @@ export async function MenuEditor() {
                 <ProductDialog
                   mode="create"
                   categoryId={category.id}
+                  shop={settings}
                   trigger={
                     <Button variant="outline" size="sm" className="self-start">
                       <PlusIcon />

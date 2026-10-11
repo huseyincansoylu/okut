@@ -6,7 +6,9 @@ import { z } from "zod";
 import { db } from "@/db";
 import { shops } from "@/db/schema";
 import type { Dictionary } from "@/i18n/dictionary";
-import { getRequestDictionary } from "@/i18n/request";
+import { getRequestDictionary, getRequestLocale } from "@/i18n/request";
+import { hasLocale } from "@/i18n/config";
+import { defaultCurrencyFor, isCurrency } from "@/lib/currency";
 import { requireUserId } from "@/lib/auth";
 import { menuTag } from "@/lib/menu";
 import { isMenuTheme } from "@/lib/menu-themes";
@@ -29,7 +31,10 @@ export async function createMyShop(_prev: ShopFormState, formData: FormData): Pr
   const [existing] = await db.select({ id: shops.id }).from(shops).where(eq(shops.ownerId, userId)).limit(1);
   if (existing) return { error: dict.errors.alreadyHasShop };
 
-  await createShop(userId, parsed.data);
+  const locale = await getRequestLocale();
+  const chosen = formData.get("currency");
+  const currency = isCurrency(chosen) ? chosen : (defaultCurrencyFor(locale) ?? "USD");
+  await createShop(userId, parsed.data, { currency, menuLanguage: locale });
   refresh();
 }
 
@@ -37,6 +42,8 @@ function settingsSchema(dict: Dictionary) {
   return z.object({
     name: shopName(dict),
     theme: z.string().refine(isMenuTheme, dict.errors.invalidTheme),
+    currency: z.string().refine(isCurrency, dict.errors.invalidCurrency),
+    menuLanguage: z.string().refine(hasLocale, dict.errors.invalidLanguage),
   });
 }
 
@@ -45,7 +52,12 @@ export async function updateShopSettings(_prev: ShopFormState, formData: FormDat
   const dict = await getRequestDictionary();
   if (!shop) return { error: dict.errors.shopNotFound };
 
-  const parsed = settingsSchema(dict).safeParse({ name: formData.get("name"), theme: formData.get("theme") });
+  const parsed = settingsSchema(dict).safeParse({
+    name: formData.get("name"),
+    theme: formData.get("theme"),
+    currency: formData.get("currency"),
+    menuLanguage: formData.get("menuLanguage"),
+  });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const image = formData.get("image");

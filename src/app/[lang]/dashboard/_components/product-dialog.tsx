@@ -16,11 +16,16 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { Product } from "@/db/schema";
 import { useI18n } from "@/i18n/client";
+import { fill } from "@/i18n/config";
+import { currencySymbol } from "@/lib/currency";
 import { priceInputValue } from "@/lib/format";
 import { createProduct, updateProduct, type ActionState } from "../menu-actions";
 import { ImageField } from "./image-field";
 
-type Props = { trigger: ReactElement } & (
+/** The shop settings product forms depend on. */
+export type MenuSettings = { currency: string; menuLanguage: string };
+
+type Props = { trigger: ReactElement; shop: MenuSettings } & (
   | { mode: "create"; categoryId: string; product?: never }
   | { mode: "edit"; product: Product; categoryId?: never }
 );
@@ -43,7 +48,7 @@ export function ProductDialog(props: Props) {
   );
 }
 
-function ProductForm({ mode, categoryId, product, onDone }: Props & { onDone: () => void }) {
+function ProductForm({ mode, categoryId, product, shop, onDone }: Props & { onDone: () => void }) {
   const { locale, dict } = useI18n();
   const t = dict.dashboard.menu;
   const english = product?.translations.en;
@@ -79,7 +84,7 @@ function ProductForm({ mode, categoryId, product, onDone }: Props & { onDone: ()
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="product-price">{t.price}</Label>
+        <Label htmlFor="product-price">{fill(t.price, { symbol: currencySymbol(shop.currency) })}</Label>
         <Input
           id="product-price"
           name="price"
@@ -95,6 +100,7 @@ function ProductForm({ mode, categoryId, product, onDone }: Props & { onDone: ()
         <input type="hidden" name="isAvailable" value={String(isAvailable)} />
       </div>
 
+      {shop.menuLanguage !== "en" && (
       <fieldset className="grid gap-3 rounded-lg border p-3">
         <legend className="px-1 text-sm font-medium">{t.englishSection}</legend>
         <p className="-mt-1 text-xs text-muted-foreground">{t.englishHint}</p>
@@ -113,6 +119,7 @@ function ProductForm({ mode, categoryId, product, onDone }: Props & { onDone: ()
           />
         </div>
       </fieldset>
+      )}
 
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
 
