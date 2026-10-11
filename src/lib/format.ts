@@ -1,20 +1,38 @@
-const priceFormatter = new Intl.NumberFormat("tr-TR", {
-  style: "currency",
-  currency: "TRY",
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
+import { INTL_LOCALES, type Locale } from "@/i18n/config";
 
-export function formatPrice(value: string | number) {
-  return priceFormatter.format(Number(value));
+const priceFormatters = new Map<Locale, Intl.NumberFormat>();
+
+export function formatPrice(value: string | number, locale: Locale) {
+  let formatter = priceFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(INTL_LOCALES[locale], {
+      style: "currency",
+      currency: "TRY",
+      currencyDisplay: "narrowSymbol",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+    priceFormatters.set(locale, formatter);
+  }
+  return formatter.format(Number(value));
 }
 
-/** "1250.50" → "1250,50" for editing in a Turkish-locale input. */
-export function priceInputValue(value: string) {
-  return value.replace(/\.00$/, "").replace(".", ",");
+/** "1250.50" → "1250,50" (tr) or "1250.50" (en) for editing in a price input. */
+export function priceInputValue(value: string, locale: Locale) {
+  const trimmed = value.replace(/\.00$/, "");
+  return locale === "tr" ? trimmed.replace(".", ",") : trimmed;
 }
 
-const relativeFormatter = new Intl.RelativeTimeFormat("tr-TR", { numeric: "auto" });
+/**
+ * Parses a typed price in the visitor's format: "1.250,50" (tr) or "1,250.50" (en).
+ * Returns NaN for anything that isn't a number.
+ */
+export function parsePrice(input: string, locale: Locale) {
+  const normalized =
+    locale === "tr" && input.includes(",") ? input.replace(/\./g, "").replace(",", ".") : input.replace(/,/g, "");
+  return normalized.trim() === "" ? NaN : Number(normalized);
+}
+
 const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["year", 365 * 24 * 3600],
   ["month", 30 * 24 * 3600],
@@ -24,11 +42,12 @@ const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["minute", 60],
 ];
 
-/** "3 saat önce", "dün", "şimdi" */
-export function formatRelativeTime(date: Date, now = Date.now()) {
+/** "3 hours ago" / "3 saat önce", "yesterday", "now" */
+export function formatRelativeTime(date: Date, locale: Locale, now = Date.now()) {
+  const formatter = new Intl.RelativeTimeFormat(INTL_LOCALES[locale], { numeric: "auto" });
   const seconds = Math.round((date.getTime() - now) / 1000);
   for (const [unit, size] of RELATIVE_UNITS) {
-    if (Math.abs(seconds) >= size) return relativeFormatter.format(Math.round(seconds / size), unit);
+    if (Math.abs(seconds) >= size) return formatter.format(Math.round(seconds / size), unit);
   }
-  return "şimdi";
+  return formatter.format(0, "second");
 }

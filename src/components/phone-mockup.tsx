@@ -1,32 +1,55 @@
 import { BatteryFullIcon, SignalIcon, WifiIcon } from "lucide-react";
 import Image from "next/image";
+import type { Locale } from "@/i18n/config";
+import { getDictionary, getLocale } from "@/i18n/server";
 import { DEMO_SHOP } from "@/lib/demo";
 import { formatPrice } from "@/lib/format";
 import { MENU_THEMES } from "@/lib/menu-themes";
 
-// A static preview of the demo menu; prices match scripts/seed-demo-menu.mts.
-const SECTIONS = [
-  {
-    name: "Sıcak İçecekler",
-    items: [
-      { name: "Türk Kahvesi", description: "Yanında lokum ile", price: 70, image: "/landing/turk-kahvesi.webp" },
-      { name: "Latte", description: "Çift shot espresso ve süt", price: 90, image: "/landing/latte.webp" },
-      { name: "Çay", description: "İnce belli bardakta", price: 20, image: "/landing/cay.webp" },
-    ],
-  },
-  {
-    name: "Tatlılar",
-    items: [
-      { name: "San Sebastian", description: "Çikolata sosu ile", price: 160, image: "/landing/cheesecake.webp" },
-      { name: "Fıstıklı Baklava", description: "Antep fıstığı ile", price: 220, image: "/landing/baklava.webp" },
-    ],
-  },
-];
+// A static preview of the demo menu; prices and English text match scripts/seed-demo-menu.mts.
+const SECTIONS = {
+  tr: [
+    {
+      name: "Sıcak İçecekler",
+      items: [
+        { name: "Türk Kahvesi", description: "Yanında lokum ile", price: 70, image: "/landing/turk-kahvesi.webp" },
+        { name: "Latte", description: "Çift shot espresso ve süt", price: 90, image: "/landing/latte.webp" },
+        { name: "Çay", description: "İnce belli bardakta", price: 20, image: "/landing/cay.webp" },
+      ],
+    },
+    {
+      name: "Tatlılar",
+      items: [
+        { name: "San Sebastian", description: "Çikolata sosu ile", price: 160, image: "/landing/cheesecake.webp" },
+        { name: "Fıstıklı Baklava", description: "Antep fıstığı ile", price: 220, image: "/landing/baklava.webp" },
+      ],
+    },
+  ],
+  en: [
+    {
+      name: "Hot Drinks",
+      items: [
+        { name: "Turkish Coffee", description: "Served with Turkish delight", price: 70, image: "/landing/turk-kahvesi.webp" },
+        { name: "Latte", description: "Double shot espresso and milk", price: 90, image: "/landing/latte.webp" },
+        { name: "Turkish Tea", description: "In a tulip-shaped glass", price: 20, image: "/landing/cay.webp" },
+      ],
+    },
+    {
+      name: "Desserts",
+      items: [
+        { name: "San Sebastian", description: "With chocolate sauce", price: 160, image: "/landing/cheesecake.webp" },
+        { name: "Pistachio Baklava", description: "With Antep pistachios", price: 220, image: "/landing/baklava.webp" },
+      ],
+    },
+  ],
+} satisfies Record<Locale, unknown>;
 
-const CATEGORIES = ["Kahvaltı", "Sıcak İçecekler", "Tatlılar"];
+const CATEGORIES = { tr: ["Kahvaltı", "Sıcak İçecekler", "Tatlılar"], en: ["Breakfast", "Hot Drinks", "Desserts"] };
 
 /** Landing hero illustration: the customer menu inside a phone frame. */
-export function PhoneMockup() {
+export async function PhoneMockup() {
+  const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
+
   return (
     <div aria-hidden className="relative mx-auto w-[19rem] [zoom:0.7]">
       {/* Side buttons */}
@@ -49,11 +72,11 @@ export function PhoneMockup() {
 
           <div className={`px-4 pt-6 pb-6 text-center ${MENU_THEMES.sage.header}`}>
             <p className="font-heading text-2xl font-bold">{DEMO_SHOP.name}</p>
-            <p className="mt-1 text-[11px] opacity-60">Menü</p>
+            <p className="mt-1 text-[11px] opacity-60">{dict.menu.label}</p>
           </div>
 
           <div className="flex gap-1.5 overflow-hidden border-b px-4 py-2.5">
-            {CATEGORIES.map((category, i) => (
+            {CATEGORIES[locale].map((category, i) => (
               <span
                 key={category}
                 className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] ${i === 1 ? "bg-foreground text-background" : ""}`}
@@ -64,7 +87,7 @@ export function PhoneMockup() {
           </div>
 
           <div className="flex flex-col gap-4 px-4 pt-4">
-            {SECTIONS.map((section) => (
+            {SECTIONS[locale].map((section) => (
               <div key={section.name}>
                 <p className="mb-1 text-sm font-semibold">{section.name}</p>
                 <ul className="divide-y">
@@ -82,7 +105,7 @@ export function PhoneMockup() {
                         <p className="truncate text-[13px] font-medium">{item.name}</p>
                         <p className="truncate text-[11px] text-muted-foreground">{item.description}</p>
                       </div>
-                      <span className="text-[13px] font-semibold tabular-nums">{formatPrice(item.price)}</span>
+                      <span className="text-[13px] font-semibold tabular-nums">{formatPrice(item.price, locale)}</span>
                     </li>
                   ))}
                 </ul>

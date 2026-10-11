@@ -2,6 +2,8 @@ import { ArrowRightIcon, ScanLineIcon } from "lucide-react";
 import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { fill } from "@/i18n/config";
+import { getDictionary, getLocale } from "@/i18n/server";
 import { DEMO_SHOP } from "@/lib/demo";
 import { qrSvg } from "@/lib/qr";
 import { siteOrigin } from "@/lib/site-url";
@@ -11,6 +13,9 @@ export async function DemoQr() {
   "use cache";
   cacheLife("max");
 
+  const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
+  const t = dict.landing;
+  // The QR has no language prefix: each phone opens the menu in its own language.
   const path = `/menu/${DEMO_SHOP.slug}`;
   const svg = await qrSvg(`${siteOrigin()}${path}`);
 
@@ -24,19 +29,16 @@ export async function DemoQr() {
       <div className="flex flex-col gap-4 text-center md:text-left">
         <p className="flex items-center justify-center gap-2 text-sm font-medium opacity-70 md:justify-start">
           <ScanLineIcon className="size-4" />
-          Canlı demo
+          {t.demoBadge}
         </p>
-        <h2 className="text-2xl font-semibold">Telefonunla okut, menüyü gör</h2>
-        <p className="max-w-md opacity-70">
-          Kameranı QR koda tut; {DEMO_SHOP.name}&apos;nin menüsü müşterilerinin göreceği haliyle açılsın. Uygulama
-          indirmeye ya da kayıt olmaya gerek yok.
-        </p>
+        <h2 className="text-2xl font-semibold">{t.demoTitle}</h2>
+        <p className="max-w-md opacity-70">{fill(t.demoText, { shop: DEMO_SHOP.name })}</p>
         <Link
-          href={path}
+          href={`/${locale}${path}`}
           target="_blank"
           className={buttonVariants({ variant: "outline", className: "self-center md:self-start" })}
         >
-          Menüyü bu cihazda aç
+          {t.demoOpen}
           <ArrowRightIcon />
         </Link>
       </div>

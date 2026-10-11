@@ -14,10 +14,10 @@ function storage() {
   }).storage.from(BUCKET);
 }
 
-/** Returns an error message for an invalid image, or null if it's acceptable. */
+/** Why an image is rejected (a dictionary key under `errors`), or null if it's acceptable. */
 export function validateImage(file: File) {
-  if (!ALLOWED_TYPES.has(file.type)) return "Fotoğraf WebP, JPEG veya PNG olmalı.";
-  if (file.size > MAX_BYTES) return "Fotoğraf en fazla 2 MB olabilir.";
+  if (!ALLOWED_TYPES.has(file.type)) return "imageType" as const;
+  if (file.size > MAX_BYTES) return "imageSize" as const;
   return null;
 }
 

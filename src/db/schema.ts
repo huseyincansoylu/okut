@@ -2,6 +2,7 @@ import {
   boolean,
   index,
   integer,
+  jsonb,
   numeric,
   pgTable,
   text,
@@ -10,6 +11,14 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { authUsers } from "drizzle-orm/supabase";
+
+/**
+ * Optional translations of a row's text, keyed by language. The row's own columns
+ * hold the original (shop's) text; menus fall back to it when a translation is missing.
+ */
+export type Translations = Partial<Record<"en" | "tr", { name?: string; description?: string }>>;
+
+const translations = jsonb("translations").$type<Translations>().notNull().default({});
 
 const timestamps = {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
@@ -47,6 +56,7 @@ export const categories = pgTable(
       .notNull()
       .references(() => shops.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    translations,
     sortOrder: integer("sort_order").notNull().default(0),
     ...timestamps,
   },
@@ -62,6 +72,7 @@ export const products = pgTable(
       .references(() => categories.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     description: text("description"),
+    translations,
     price: numeric("price", { precision: 10, scale: 2 }).notNull(),
     imageUrl: text("image_url"),
     isAvailable: boolean("is_available").notNull().default(true),

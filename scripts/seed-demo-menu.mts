@@ -52,6 +52,40 @@ const MENU: Record<string, Item[]> = {
   ],
 };
 
+/** English text shown when the menu is viewed in English (category or product name → translation). */
+const ENGLISH: Record<string, { name: string; description?: string }> = {
+  Kahvaltı: { name: "Breakfast" },
+  "Serpme Kahvaltı (2 kişilik)": {
+    name: "Turkish Breakfast Spread (for 2)",
+    description: "Assorted cheeses, olives, honey and clotted cream, jam, eggs with sucuk, unlimited tea",
+  },
+  Menemen: { name: "Menemen", description: "Turkish scrambled eggs with tomatoes and peppers; onions on request" },
+  "Sucuklu Yumurta": { name: "Eggs with Sucuk", description: "Spicy Turkish sausage and two eggs in a copper pan" },
+  "Simit Tabağı": { name: "Simit Plate", description: "Fresh sesame bread ring, white cheese, tomato, cucumber" },
+  "Sıcak İçecekler": { name: "Hot Drinks" },
+  Çay: { name: "Turkish Tea", description: "Brewed black tea in a tulip-shaped glass" },
+  "Türk Kahvesi": { name: "Turkish Coffee", description: "Served with Turkish delight" },
+  Espresso: { name: "Espresso" },
+  Latte: { name: "Latte", description: "Double shot espresso and steamed milk" },
+  Sahlep: { name: "Salep", description: "Warm orchid-root milk drink with cinnamon, winter special" },
+  "Soğuk İçecekler": { name: "Cold Drinks" },
+  "Ev Yapımı Limonata": { name: "Homemade Lemonade", description: "Freshly squeezed lemons and mint" },
+  "Iced Latte": { name: "Iced Latte" },
+  Ayran: { name: "Ayran", description: "Chilled salted yogurt drink" },
+  Soda: { name: "Sparkling Water" },
+  Tatlılar: { name: "Desserts" },
+  "San Sebastian Cheesecake": { name: "San Sebastian Cheesecake", description: "Served with chocolate sauce" },
+  "Fıstıklı Baklava (4 dilim)": { name: "Pistachio Baklava (4 pieces)", description: "Made with Antep pistachios" },
+  Brownie: { name: "Brownie", description: "Served warm with ice cream" },
+  Sütlaç: { name: "Rice Pudding", description: "Oven-baked, topped with hazelnuts" },
+  Atıştırmalıklar: { name: "Snacks" },
+  "Kaşarlı Tost": { name: "Cheese Toastie" },
+  "Patates Kızartması": { name: "French Fries", description: "Seasoned, with ketchup and mayonnaise" },
+  "Mevsim Salata": { name: "Seasonal Salad", description: "Mediterranean greens with pomegranate dressing" },
+};
+
+const translationsFor = (text: string) => (ENGLISH[text] ? { en: ENGLISH[text] } : {});
+
 /** Product name → photo file in scripts/demo-images. */
 const IMAGES: Record<string, string> = {
   "Serpme Kahvaltı (2 kişilik)": "serpme-kahvalti.webp",
@@ -104,7 +138,7 @@ try {
     for (const [categoryIndex, [categoryName, items]] of Object.entries(MENU).entries()) {
       const [category] = await tx
         .insert(categories)
-        .values({ shopId: shop.id, name: categoryName, sortOrder: categoryIndex })
+        .values({ shopId: shop.id, name: categoryName, translations: translationsFor(categoryName), sortOrder: categoryIndex })
         .returning();
 
       await tx.insert(products).values(
@@ -113,6 +147,7 @@ try {
           name,
           price,
           description: description ?? null,
+          translations: translationsFor(name),
           imageUrl: imageUrls.get(name) ?? null,
           isAvailable,
           sortOrder,

@@ -2,19 +2,23 @@
 
 **QR-code digital menus for cafés and restaurants.** Shop owners build their menu in a dashboard, print a QR table card, and customers scan it to see the live menu in their browser. No app to install, no sign-up.
 
-The name comes from the Turkish word *okut*: "scan it". The interface is in Turkish because the product targets small businesses in Turkey.
+The name comes from the Turkish word *okut*: "scan it". The whole app is available in **English and Turkish**, and menus can be translated so tourists can read them too.
 
 ## Features
 
 **For shop owners**
 - **Menu management:** create categories and products with prices, descriptions and photos; edit or delete them inline.
-- **Sold-out toggle:** mark an item as unavailable in one click (optimistic UI). It stays on the menu, greyed out with a "Tükendi" (sold out) badge.
+- **Sold-out toggle:** mark an item as unavailable in one click (optimistic UI). It stays on the menu, greyed out with a "Sold out" badge.
+- **Menu translations:** add optional English names and descriptions to categories and products; untranslated items fall back to the original text.
+- **Shop settings:** rename the shop (the menu URL stays the same, so printed QR codes keep working), upload a logo and pick a header color with a live preview.
 - **Photo uploads:** images are resized and converted to WebP in the browser before upload, so uploads stay small (~100–400 KB) even from a phone camera.
 - **QR codes:** download the menu's QR code as PNG or SVG, or print a ready-made table card.
 - **Overview dashboard:** menu stats, recently edited products, and a "menu health" check that flags products missing photos or descriptions.
 
 **For customers**
 - A fast, mobile-first public menu at `/menu/<shop-slug>`, with sticky category navigation.
+- Tapping an item opens a bottom sheet with a large photo and the full description.
+- Opens in the phone's language (English or Turkish), with a TR / EN switch.
 - Served from cache and refreshed as soon as the owner changes something.
 
 **Live demo:** [okut.vercel.app](https://okut.vercel.app). Scan the QR code on the landing page, or open the sample menu of **Okut Cafe** directly at [okut.vercel.app/menu/okut-cafe](https://okut.vercel.app/menu/okut-cafe). It's a read-only shop created by `pnpm db:seed` (5 categories, 20 products, 12 photos).
@@ -37,7 +41,8 @@ The name comes from the Turkish word *okut*: "scan it". The interface is in Turk
 - **Input validation.** All form input is validated with Zod on the server, including Turkish-formatted prices (`1.250,50` → `1250.50`).
 - **Secure uploads.** Photos are uploaded server-side with the Supabase secret key, only after the ownership check, with type (WebP/JPEG/PNG) and size (2 MB) limits enforced both in the app and on the storage bucket. Replaced or deleted photos are removed from storage.
 - **Caching.** Public menus use Next.js `"use cache"` with per-shop cache tags; owner edits call `updateTag()`, so customers see changes immediately while unchanged menus are served from cache.
-- **Session handling.** `src/proxy.ts` refreshes the Supabase session on each request and protects `/dashboard`. Public menu routes skip it entirely.
+- **Internationalization.** Every page lives under `app/[lang]` (`/en`, `/tr`) and is prerendered per language. `src/proxy.ts` sends unprefixed URLs, including printed QR codes, to the visitor's language (saved choice, then `Accept-Language`). Server Components read the language with `next/root-params`; Server Actions use a cookie the proxy keeps in sync. Dictionaries are typed, so a missing Turkish key is a compile error.
+- **Session handling.** The proxy also refreshes the Supabase session on each request and protects `/[lang]/dashboard`. Public menu routes skip it entirely.
 - **Read-only demo.** The demo shop has no owner (`owner_id` is `NULL`). No account can resolve it as "their" shop, so it cannot be edited through the app.
 
 ## Project structure
@@ -45,12 +50,14 @@ The name comes from the Turkish word *okut*: "scan it". The interface is in Turk
 ```
 src/
 ├── app/
-│   ├── page.tsx                # Landing page
-│   ├── auth/                   # Sign-in / sign-up Server Actions, email confirmation
-│   ├── dashboard/              # Owner dashboard: overview, menu editor, QR codes
-│   └── menu/[slug]/            # Public, cached customer menu
-├── components/                 # Auth dialog and shadcn/ui primitives
+│   ├── [lang]/                 # Every page, per language (en, tr)
+│   │   ├── page.tsx            # Landing page
+│   │   ├── dashboard/          # Owner dashboard: overview, menu editor, QR codes, settings
+│   │   └── menu/[slug]/        # Public, cached customer menu
+│   └── auth/                   # Sign-in / sign-up Server Actions, email confirmation
+├── components/                 # Auth dialog, language switch and shadcn/ui primitives
 ├── db/                         # Drizzle schema and client
+├── i18n/                       # Locales, typed dictionaries, server/client helpers
 └── lib/                        # Auth, storage, caching, QR and formatting helpers
 drizzle/                        # SQL migrations
 scripts/                        # Demo menu seed script and photos

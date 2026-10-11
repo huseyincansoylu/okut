@@ -3,12 +3,15 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useI18n } from "@/i18n/client";
 import { SignInForm, SignUpForm } from "./auth-forms";
 
 type Mode = "login" | "signup";
 
 /** Sign-in and sign-up modals, driven by the `?auth=login|signup` query param. */
 export function AuthDialog() {
+  const { dict } = useI18n();
+  const t = dict.auth;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -35,14 +38,14 @@ export function AuthDialog() {
       <Dialog open={auth === "login"} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Giriş yap</DialogTitle>
-            <DialogDescription>Menünü düzenlemek için hesabına giriş yap.</DialogDescription>
+            <DialogTitle>{t.signInTitle}</DialogTitle>
+            <DialogDescription>{t.signInDescription}</DialogDescription>
           </DialogHeader>
           <SignInForm next={next} />
           <p className="text-center text-sm text-muted-foreground">
-            Hesabın yok mu?{" "}
+            {t.noAccount}{" "}
             <Button variant="link" className="h-auto p-0" onClick={() => setMode("signup")}>
-              Dükkanını oluştur
+              {dict.common.createShop}
             </Button>
           </p>
         </DialogContent>
@@ -51,16 +54,14 @@ export function AuthDialog() {
       <Dialog open={auth === "signup"} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Dükkanını oluştur</DialogTitle>
-            <DialogDescription>
-              Hesabın ve dükkanın birlikte oluşturulur. Müşterilerin menüyü kayıt olmadan görür.
-            </DialogDescription>
+            <DialogTitle>{t.signUpTitle}</DialogTitle>
+            <DialogDescription>{t.signUpDescription}</DialogDescription>
           </DialogHeader>
           <SignUpForm />
           <p className="text-center text-sm text-muted-foreground">
-            Zaten hesabın var mı?{" "}
+            {t.haveAccount}{" "}
             <Button variant="link" className="h-auto p-0" onClick={() => setMode("login")}>
-              Giriş yap
+              {dict.common.signIn}
             </Button>
           </p>
         </DialogContent>
