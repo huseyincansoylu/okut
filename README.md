@@ -29,10 +29,11 @@
 - **Photo uploads:** resized and re-encoded to WebP in the browser before upload, so a 5 MB phone photo becomes ~100–400 KB.
 - **QR codes:** download as PNG or SVG, or print a ready-made table card.
 - **Overview:** menu stats, recently edited items and a "menu health" check for missing photos or descriptions.
-- **Settings:** rename the shop (the menu URL never changes, so printed QR codes keep working), upload a logo, pick one of six header colors with a live preview.
+- **Settings:** rename the shop (the menu URL never changes, so printed QR codes keep working), upload a logo, pick one of six header colors with a live preview, and optionally share the guest Wi-Fi.
 
 **For customers**
 - Mobile-first menu with sticky category navigation and a bottom-sheet detail view for each item.
+- Guest Wi-Fi behind a header icon: a bottom sheet on phones (a dialog on larger screens) with a one-tap copy for the password.
 - Opens in the phone's language; prices follow that language's conventions (`£3.50`, `3,50 €`, `₺650`).
 - Served from cache, refreshed the moment the owner saves a change.
 
@@ -84,6 +85,8 @@ erDiagram
         text theme "header color preset"
         text currency "TRY, EUR, GBP or USD"
         text menu_language "en, tr or es"
+        text wifi_name "optional"
+        text wifi_password "optional, shown on the menu"
     }
     CATEGORIES {
         uuid id PK
