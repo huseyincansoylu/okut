@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {
+    // Turbopack's filesystem cache (on by default since 16.3) kept serving CSS from
+    // before globals.css changed: Vercel restores .next/cache between builds and the
+    // Tailwind loader's output wasn't invalidated. Off for builds and dev until that's fixed.
+    turbopackFileSystemCacheForBuild: false,
+    turbopackFileSystemCacheForDev: false,
     serverActions: {
       // Photos are resized to WebP in the browser (~100–400 KB); leave headroom.
       bodySizeLimit: "3mb",
