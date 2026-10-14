@@ -83,7 +83,7 @@ erDiagram
         text name
         text logo_url
         text theme "header color preset"
-        text currency "TRY, EUR, GBP or USD"
+        text currency "TRY, EUR or GBP, set from the sign-up language"
         text menu_language "en, tr or es"
         text wifi_name "optional"
         text wifi_password "optional, shown on the menu"
