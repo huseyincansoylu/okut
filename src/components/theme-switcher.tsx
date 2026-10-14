@@ -4,7 +4,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { Menu } from "@base-ui/react/menu";
 import { CheckIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { cn } from "cn";
-import { useI18n } from "@/i18n/client";
+import { dict } from "@/lib/dictionary";
 import { applyTheme, THEME_STORAGE_KEY, THEMES, type Theme } from "@/lib/theme";
 
 const ICONS = { light: SunIcon, dark: MoonIcon, system: MonitorIcon } as const;
@@ -38,7 +38,6 @@ function storedTheme(): Theme {
 
 /** Light / dark / system menu. The choice lives in localStorage on this device. */
 export function ThemeSwitcher({ className }: { className?: string }) {
-  const { dict } = useI18n();
   const labels = { light: dict.common.themeLight, dark: dict.common.themeDark, system: dict.common.themeSystem };
   // "system" on the server; the stored choice once hydrated.
   const theme = useSyncExternalStore(subscribe, storedTheme, () => "system" as const);

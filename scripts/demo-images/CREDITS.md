@@ -1,10 +1,8 @@
 # Demo menu photos
 
 All photos are from [Unsplash](https://unsplash.com) under the
-[Unsplash License](https://unsplash.com/license), resized to 800×800 WebP.
-Files are grouped by the demo menu they belong to.
-
-## tr/ (Okut Cafe, Istanbul)
+[Unsplash License](https://unsplash.com/license), resized to 800×800 WebP. The landing page's phone preview
+(`public/landing/`) reuses five of them.
 
 | File | Photographer | Source |
 |---|---|---|

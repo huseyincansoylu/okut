@@ -2,8 +2,7 @@ import "server-only";
 import { asc, eq, inArray } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
-import { categories, products, shops, type Translations } from "@/db/schema";
-import type { Locale } from "@/i18n/config";
+import { categories, products, shops } from "@/db/schema";
 
 export const menuTag = (shopId: string) => `menu:${shopId}`;
 
@@ -18,8 +17,6 @@ export async function getPublicMenu(slug: string) {
       slug: shops.slug,
       logoUrl: shops.logoUrl,
       theme: shops.theme,
-      currency: shops.currency,
-      menuLanguage: shops.menuLanguage,
       wifiName: shops.wifiName,
       wifiPassword: shops.wifiPassword,
     })
@@ -35,7 +32,7 @@ export async function getPublicMenu(slug: string) {
   cacheTag(menuTag(shop.id));
 
   const categoryRows = await db
-    .select({ id: categories.id, name: categories.name, translations: categories.translations })
+    .select({ id: categories.id, name: categories.name })
     .from(categories)
     .where(eq(categories.shopId, shop.id))
     .orderBy(asc(categories.sortOrder), asc(categories.createdAt));
@@ -47,7 +44,6 @@ export async function getPublicMenu(slug: string) {
           categoryId: products.categoryId,
           name: products.name,
           description: products.description,
-          translations: products.translations,
           price: products.price,
           imageUrl: products.imageUrl,
           isAvailable: products.isAvailable,
@@ -64,41 +60,4 @@ export async function getPublicMenu(slug: string) {
   return { shop, sections };
 }
 
-type RawMenu = NonNullable<Awaited<ReturnType<typeof getPublicMenu>>>;
-
-/**
- * A row's text for a visitor reading `locale`. The row's own text is in `menuLanguage`;
- * other visitors get their translation, then English (widely read by tourists), then
- * the original.
- */
-export function localized<T extends { name: string; description?: string | null; translations: Translations }>(
-  row: T,
-  locale: Locale,
-  menuLanguage: string,
-) {
-  if (locale === menuLanguage) return { name: row.name, description: row.description || null };
-  const own = row.translations[locale];
-  const english = row.translations.en;
-  const translation = { name: own?.name || english?.name, description: own?.description || english?.description };
-  return {
-    name: translation?.name || row.name,
-    description: translation?.description || row.description || null,
-  };
-}
-
-/** The menu with every category and product name/description in `locale`. */
-export function localizeMenu(menu: RawMenu, locale: Locale) {
-  return {
-    shop: menu.shop,
-    sections: menu.sections.map(({ translations, ...section }) => ({
-      ...section,
-      name: localized({ ...section, translations }, locale, menu.shop.menuLanguage).name,
-      products: section.products.map(({ translations, ...product }) => ({
-        ...product,
-        ...localized({ ...product, translations }, locale, menu.shop.menuLanguage),
-      })),
-    })),
-  };
-}
-
-export type PublicMenu = ReturnType<typeof localizeMenu>;
+export type PublicMenu = NonNullable<Awaited<ReturnType<typeof getPublicMenu>>>;

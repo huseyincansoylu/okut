@@ -1,8 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Refreshes the Supabase session; with a `locale`, also guards that language's dashboard. */
-export async function updateSession(request: NextRequest, locale?: string) {
+/** Refreshes the Supabase session and guards the dashboard. */
+export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -31,13 +31,10 @@ export async function updateSession(request: NextRequest, locale?: string) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (!locale) return response;
-
   const { pathname } = request.nextUrl;
-  const home = `/${locale}`;
-  if (!user && (pathname === `${home}/dashboard` || pathname.startsWith(`${home}/dashboard/`))) {
+  if (!user && (pathname === "/dashboard" || pathname.startsWith("/dashboard/"))) {
     const url = request.nextUrl.clone();
-    url.pathname = home;
+    url.pathname = "/";
     url.search = "";
     url.searchParams.set("auth", "login");
     url.searchParams.set("next", pathname);
@@ -45,9 +42,9 @@ export async function updateSession(request: NextRequest, locale?: string) {
   }
 
   // Signed-in users don't need the auth modal.
-  if (user && pathname === home && request.nextUrl.searchParams.has("auth")) {
+  if (user && pathname === "/" && request.nextUrl.searchParams.has("auth")) {
     const url = request.nextUrl.clone();
-    url.pathname = `${home}/dashboard`;
+    url.pathname = "/dashboard";
     url.search = "";
     return NextResponse.redirect(url);
   }

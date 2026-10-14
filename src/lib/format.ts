@@ -1,46 +1,35 @@
-import { INTL_LOCALES, type Locale } from "@/i18n/config";
+import { INTL_LOCALE } from "@/lib/dictionary";
 
-const priceFormatters = new Map<string, Intl.NumberFormat>();
+const priceFormatter = new Intl.NumberFormat(INTL_LOCALE, {
+  style: "currency",
+  currency: "TRY",
+  currencyDisplay: "narrowSymbol",
+  // "₺85,50" but "₺650"
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+  trailingZeroDisplay: "stripIfInteger",
+});
 
-/** A price in the shop's currency, written the way the visitor's language does ("€3.50", "3,50 €"). */
-export function formatPrice(value: string | number, locale: Locale, currency: string) {
-  const key = `${locale}:${currency}`;
-  let formatter = priceFormatters.get(key);
-  if (!formatter) {
-    formatter = new Intl.NumberFormat(INTL_LOCALES[locale], {
-      style: "currency",
-      currency,
-      currencyDisplay: "narrowSymbol",
-      // "3,50 €" but "650 ₺"
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-      trailingZeroDisplay: "stripIfInteger",
-    });
-    priceFormatters.set(key, formatter);
-  }
-  return formatter.format(Number(value));
+/** A price in Turkish lira: "₺85,50", "₺1.250". */
+export function formatPrice(value: string | number) {
+  return priceFormatter.format(Number(value));
 }
 
-/** Languages that write prices with a decimal comma ("1.250,50"). */
-const DECIMAL_COMMA: ReadonlySet<Locale> = new Set(["tr"]);
-
-/** "1250.50" → "1250,50" (tr, es) or "1250.50" (en) for editing in a price input. */
-export function priceInputValue(value: string, locale: Locale) {
-  const trimmed = value.replace(/\.00$/, "");
-  return DECIMAL_COMMA.has(locale) ? trimmed.replace(".", ",") : trimmed;
+/** "1250.50" → "1250,50" for editing in a price input. */
+export function priceInputValue(value: string) {
+  return value.replace(/\.00$/, "").replace(".", ",");
 }
 
 /**
- * Parses a typed price in the visitor's format: "1.250,50" (tr, es) or "1,250.50" (en).
+ * Parses a typed price: "1.250,50", "1250,5" or "1250.50".
  * Returns NaN for anything that isn't a number.
  */
-export function parsePrice(input: string, locale: Locale) {
-  const normalized =
-    DECIMAL_COMMA.has(locale) && input.includes(",")
-      ? input.replace(/\./g, "").replace(",", ".")
-      : input.replace(/,/g, "");
+export function parsePrice(input: string) {
+  const normalized = input.includes(",") ? input.replace(/\./g, "").replace(",", ".") : input;
   return normalized.trim() === "" ? NaN : Number(normalized);
 }
+
+const relativeFormatter = new Intl.RelativeTimeFormat(INTL_LOCALE, { numeric: "auto" });
 
 const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["year", 365 * 24 * 3600],
@@ -51,12 +40,11 @@ const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
   ["minute", 60],
 ];
 
-/** "3 hours ago" / "3 saat önce", "yesterday", "now" */
-export function formatRelativeTime(date: Date, locale: Locale, now = Date.now()) {
-  const formatter = new Intl.RelativeTimeFormat(INTL_LOCALES[locale], { numeric: "auto" });
+/** "3 saat önce", "dün", "şimdi" */
+export function formatRelativeTime(date: Date, now = Date.now()) {
   const seconds = Math.round((date.getTime() - now) / 1000);
   for (const [unit, size] of RELATIVE_UNITS) {
-    if (Math.abs(seconds) >= size) return formatter.format(Math.round(seconds / size), unit);
+    if (Math.abs(seconds) >= size) return relativeFormatter.format(Math.round(seconds / size), unit);
   }
-  return formatter.format(0, "second");
+  return relativeFormatter.format(0, "second");
 }

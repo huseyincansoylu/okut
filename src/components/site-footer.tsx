@@ -1,18 +1,17 @@
 import Link from "next/link";
-import { getDictionary, getLocale } from "@/i18n/server";
+import { dict } from "@/lib/dictionary";
 import { Logo } from "./logo";
 
 const REPO_URL = "https://github.com/huseyincansoylu/okut";
 
-export async function SiteFooter() {
-  const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
+export function SiteFooter() {
   const t = dict.landing;
 
   return (
     <footer className="border-t bg-card">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-3">
-          <Link href={`/${locale}`} aria-label="Okut" className="self-start">
+          <Link href="/" aria-label="Okut" className="self-start">
             <Logo className="text-xl" />
           </Link>
           <p className="max-w-xs text-sm text-muted-foreground">{t.footerTagline}</p>

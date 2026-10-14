@@ -3,14 +3,13 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useI18n } from "@/i18n/client";
+import { dict } from "@/lib/dictionary";
 import { SignInForm, SignUpForm } from "./auth-forms";
 
 type Mode = "login" | "signup";
 
 /** Sign-in and sign-up modals, driven by the `?auth=login|signup` query param. */
 export function AuthDialog() {
-  const { dict } = useI18n();
   const t = dict.auth;
   const router = useRouter();
   const pathname = usePathname();

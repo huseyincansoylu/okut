@@ -3,26 +3,20 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { z } from "zod";
-import type { Dictionary } from "@/i18n/dictionary";
-import { getRequestDictionary, getRequestLocale } from "@/i18n/request";
+import { dict } from "@/lib/dictionary";
 import { createClient } from "@/lib/supabase/server";
-import { DEFAULT_CURRENCY } from "@/lib/currency";
 import { createShop } from "@/lib/shops";
 
 export type AuthState = { error?: string; message?: string } | undefined;
 
-function credentials(dict: Dictionary) {
-  return z.object({
-    email: z.email(dict.auth.errors.invalidEmail),
-    password: z.string().min(8, dict.auth.errors.passwordTooShort),
-  });
-}
+const credentials = z.object({
+  email: z.email(dict.auth.errors.invalidEmail),
+  password: z.string().min(8, dict.auth.errors.passwordTooShort),
+});
 
-function signUpSchema(dict: Dictionary) {
-  return credentials(dict).extend({
-    shopName: z.string().trim().min(2, dict.errors.shopNameLength).max(60, dict.errors.shopNameMax),
-  });
-}
+const signUpSchema = credentials.extend({
+  shopName: z.string().trim().min(2, dict.errors.shopNameLength).max(60, dict.errors.shopNameMax),
+});
 
 /** Where to go after signing in: a same-site path from `next`, else the dashboard. */
 function safeNext(value: FormDataEntryValue | null, fallback: string) {
@@ -33,23 +27,20 @@ function safeNext(value: FormDataEntryValue | null, fallback: string) {
 }
 
 export async function signIn(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const dict = await getRequestDictionary();
-  const parsed = credentials(dict).safeParse(Object.fromEntries(formData));
+  const parsed = credentials.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return { error: dict.auth.errors.wrongCredentials };
 
-  redirect(safeNext(formData.get("next"), `/${await getRequestLocale()}/dashboard`));
+  redirect(safeNext(formData.get("next"), "/dashboard"));
 }
 
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const dict = await getRequestDictionary();
-  const parsed = signUpSchema(dict).safeParse(Object.fromEntries(formData));
+  const parsed = signUpSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { email, password, shopName } = parsed.data;
-  const locale = await getRequestLocale();
 
   const origin = (await headers()).get("origin");
   const supabase = await createClient();
@@ -75,18 +66,18 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   }
 
   try {
-    await createShop(data.user.id, shopName, { currency: DEFAULT_CURRENCY, menuLanguage: locale });
+    await createShop(data.user.id, shopName);
   } catch {
     // The account exists; the dashboard lets the owner create the shop later.
     console.error("Shop creation failed during sign-up");
   }
 
-  if (data.session) redirect(`/${locale}/dashboard`);
+  if (data.session) redirect("/dashboard");
   return { message: dict.auth.confirmEmail };
 }
 
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect(`/${await getRequestLocale()}`);
+  redirect("/");
 }

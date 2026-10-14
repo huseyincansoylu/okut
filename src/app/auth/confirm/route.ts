@@ -1,6 +1,5 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
-import { getRequestLocale } from "@/i18n/request";
 import { createClient } from "@/lib/supabase/server";
 
 // Target of the email confirmation link.
@@ -19,8 +18,7 @@ export async function GET(request: NextRequest) {
 
   const url = request.nextUrl.clone();
   url.search = "";
-  const locale = await getRequestLocale();
-  url.pathname = error ? `/${locale}` : `/${locale}/dashboard`;
+  url.pathname = error ? "/" : "/dashboard";
   if (error) url.searchParams.set("auth", "login");
   return NextResponse.redirect(url);
 }

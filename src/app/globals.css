@@ -93,7 +93,7 @@
 
 /* Dark theme: "koyu dem" (dark-brewed tea) surfaces, cream text and a brighter
    tea red so it stands out on dark grounds. The .dark class is set before first
-   paint by the theme script in app/[lang]/layout.tsx (system, light or dark). */
+   paint by the theme script in app/layout.tsx (system, light or dark). */
 .dark {
   color-scheme: dark;
   --brand-tint: oklch(0.280 0.041 43.3);

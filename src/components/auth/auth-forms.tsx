@@ -5,7 +5,7 @@ import { signIn, signUp } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useI18n } from "@/i18n/client";
+import { dict } from "@/lib/dictionary";
 
 function FormStatus({ state }: { state: { error?: string; message?: string } | undefined }) {
   if (state?.error) return <p className="text-sm text-destructive">{state.error}</p>;
@@ -14,7 +14,6 @@ function FormStatus({ state }: { state: { error?: string; message?: string } | u
 }
 
 function EmailPasswordFields({ newPassword }: { newPassword?: boolean }) {
-  const { dict } = useI18n();
   return (
     <>
       <div className="grid gap-2">
@@ -37,7 +36,6 @@ function EmailPasswordFields({ newPassword }: { newPassword?: boolean }) {
 }
 
 export function SignInForm({ next }: { next?: string }) {
-  const { dict } = useI18n();
   const [state, action, pending] = useActionState(signIn, undefined);
 
   return (
@@ -53,7 +51,6 @@ export function SignInForm({ next }: { next?: string }) {
 }
 
 export function SignUpForm() {
-  const { dict } = useI18n();
   const [state, action, pending] = useActionState(signUp, undefined);
 
   return (

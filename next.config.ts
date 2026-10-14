@@ -3,7 +3,6 @@ import type { NextConfig } from "next";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {
@@ -17,13 +16,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "3mb",
     },
   },
-  // Keep links to earlier demo addresses working.
+  // Keep earlier addresses working.
   async redirects() {
     return [
+      // URLs used to carry a language prefix (/tr/..., and /en/..., /es/... before that).
+      { source: "/:lang(tr|en|es)", destination: "/", permanent: true },
+      { source: "/:lang(tr|en|es)/:path*", destination: "/:path*", permanent: true },
+      // Earlier demo cafés.
       { source: "/menu/okut-cafe", destination: "/menu/okut-cafe-istanbul", permanent: false },
-      { source: "/:lang/menu/okut-cafe", destination: "/:lang/menu/okut-cafe-istanbul", permanent: false },
-      // The London and Madrid demos were retired with the English and Spanish sites.
-      { source: "/:lang/menu/okut-cafe-:city(london|madrid)", destination: "/tr/menu/okut-cafe-istanbul", permanent: false },
       { source: "/menu/okut-cafe-:city(london|madrid)", destination: "/menu/okut-cafe-istanbul", permanent: false },
     ];
   },

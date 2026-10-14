@@ -2,9 +2,8 @@ import { ArrowRightIcon, ScanLineIcon } from "lucide-react";
 import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { fill } from "@/i18n/config";
-import { getDictionary, getLocale } from "@/i18n/server";
 import { DEMO_SHOP } from "@/lib/demo";
+import { dict, fill } from "@/lib/dictionary";
 import { qrSvg } from "@/lib/qr";
 import { siteOrigin } from "@/lib/site-url";
 
@@ -13,9 +12,7 @@ export async function DemoQr() {
   "use cache";
   cacheLife("max");
 
-  const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
   const t = dict.landing;
-  // No language prefix in the QR: the proxy adds it when the phone opens the link.
   const path = `/menu/${DEMO_SHOP.slug}`;
   const svg = await qrSvg(`${siteOrigin()}${path}`);
 
@@ -34,7 +31,7 @@ export async function DemoQr() {
         <h2 className="font-heading text-3xl font-extrabold tracking-tight">{t.demoTitle}</h2>
         <p className="max-w-md text-muted-foreground">{fill(t.demoText, { shop: DEMO_SHOP.name })}</p>
         <Link
-          href={`/${locale}${path}`}
+          href={path}
           target="_blank"
           className={buttonVariants({ variant: "outline", className: "self-center md:self-start" })}
         >

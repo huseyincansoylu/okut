@@ -3,6 +3,4 @@
 export const DEMO_SHOP = {
   name: "Okut Cafe",
   slug: "okut-cafe-istanbul",
-  currency: "TRY",
-  menuLanguage: "tr",
 } as const;
