@@ -1,14 +1,13 @@
 /**
- * Creates (or refreshes) the read-only demo menus, one per language (see
- * src/lib/demo.ts): /menu/okut-cafe-istanbul (Turkish), /menu/okut-cafe-london (English)
- * and /menu/okut-cafe-madrid (Spanish).
+ * Creates (or refreshes) the read-only demo menu at /menu/okut-cafe-istanbul
+ * (see src/lib/demo.ts).
  *
  *   pnpm db:seed
  *
- * The shops have no owner, so no account can sign in and edit them. Re-running
- * replaces their categories and products but keeps the shop ids (and URLs).
- * Photos in scripts/demo-images/<language>/ (see CREDITS.md there) are uploaded
- * to the menu-images bucket under each shop's folder, overwriting earlier copies.
+ * The shop has no owner, so no account can sign in and edit it. Re-running
+ * replaces its categories and products but keeps the shop id (and URL).
+ * Photos in scripts/demo-images/tr/ (see CREDITS.md there) are uploaded to the
+ * menu-images bucket under the shop's folder, overwriting earlier copies.
  * A refreshed menu is cached; restart the server / redeploy to see changes.
  */
 import { readFile } from "node:fs/promises";
@@ -18,13 +17,11 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { categories, products, shops } from "../src/db/schema.ts";
 import type { Locale } from "../src/i18n/config.ts";
-import { DEMO_SHOPS } from "../src/lib/demo.ts";
+import { DEMO_SHOP } from "../src/lib/demo.ts";
 import type { DemoMenu } from "./demo-menus/types.mts";
 
 const MENUS: Partial<Record<Locale, () => Promise<{ menu: DemoMenu }>>> = {
   tr: () => import("./demo-menus/tr.mts"),
-  en: () => import("./demo-menus/en.mts"),
-  es: () => import("./demo-menus/es.mts"),
 };
 
 const bucket = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY!, {
@@ -51,7 +48,7 @@ const db = drizzle(client);
 try {
   for (const [locale, load] of Object.entries(MENUS) as [Locale, () => Promise<{ menu: DemoMenu }>][]) {
     const { menu } = await load();
-    const demo = DEMO_SHOPS[locale];
+    const demo = DEMO_SHOP;
 
     await db.transaction(async (tx) => {
       const [existing] = await tx.select().from(shops).where(eq(shops.slug, demo.slug));

@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { signOut } from "@/app/auth/actions";
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Logo } from "@/components/logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
@@ -23,9 +22,6 @@ export default async function DashboardLayout({ children }: LayoutProps<"/[lang]
             <Logo className="text-xl" />
           </Link>
           <div className="flex shrink-0 items-center gap-1 md:hidden">
-            <Suspense>
-              <LocaleSwitcher />
-            </Suspense>
             <ThemeSwitcher />
             <SignOutButton label={dict.common.signOut} />
           </div>
@@ -41,12 +37,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/[lang]
 
         <div className="mt-auto hidden items-center justify-between gap-2 border-t p-3 md:flex">
           <SignOutButton label={dict.common.signOut} />
-          <div className="flex items-center gap-1">
-            <Suspense>
-              <LocaleSwitcher />
-            </Suspense>
-            <ThemeSwitcher />
-          </div>
+          <ThemeSwitcher />
         </div>
       </aside>
 

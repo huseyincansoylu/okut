@@ -17,11 +17,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "3mb",
     },
   },
-  // The Turkish demo moved to /menu/okut-cafe-istanbul; keep links shared before that working.
+  // Keep links to earlier demo addresses working.
   async redirects() {
     return [
       { source: "/menu/okut-cafe", destination: "/menu/okut-cafe-istanbul", permanent: false },
       { source: "/:lang/menu/okut-cafe", destination: "/:lang/menu/okut-cafe-istanbul", permanent: false },
+      // The London and Madrid demos were retired with the English and Spanish sites.
+      { source: "/:lang/menu/okut-cafe-:city(london|madrid)", destination: "/tr/menu/okut-cafe-istanbul", permanent: false },
+      { source: "/menu/okut-cafe-:city(london|madrid)", destination: "/menu/okut-cafe-istanbul", permanent: false },
     ];
   },
   images: {

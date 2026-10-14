@@ -7,7 +7,7 @@ import { db } from "@/db";
 import { shops } from "@/db/schema";
 import type { Dictionary } from "@/i18n/dictionary";
 import { getRequestDictionary, getRequestLocale } from "@/i18n/request";
-import { SIGN_UP_CURRENCY } from "@/lib/currency";
+import { DEFAULT_CURRENCY } from "@/lib/currency";
 import { requireUserId } from "@/lib/auth";
 import { menuTag } from "@/lib/menu";
 import { isMenuTheme } from "@/lib/menu-themes";
@@ -31,7 +31,7 @@ export async function createMyShop(_prev: ShopFormState, formData: FormData): Pr
   if (existing) return { error: dict.errors.alreadyHasShop };
 
   const locale = await getRequestLocale();
-  await createShop(userId, parsed.data, { currency: SIGN_UP_CURRENCY[locale], menuLanguage: locale });
+  await createShop(userId, parsed.data, { currency: DEFAULT_CURRENCY, menuLanguage: locale });
   refresh();
 }
 

@@ -2,10 +2,10 @@ import { BatteryFullIcon, SignalIcon, WifiIcon } from "lucide-react";
 import Image from "next/image";
 import type { Locale } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
-import { DEMO_SHOPS } from "@/lib/demo";
+import { DEMO_SHOP } from "@/lib/demo";
 import { formatPrice } from "@/lib/format";
 
-// A static preview of each language's demo café; items and prices match scripts/demo-menus/.
+// A static preview of the demo café; items and prices match scripts/demo-menus/tr.mts.
 const SECTIONS = {
   tr: [
     {
@@ -24,47 +24,11 @@ const SECTIONS = {
       ],
     },
   ],
-  en: [
-    {
-      name: "Hot Drinks",
-      items: [
-        { name: "English Breakfast Tea", description: "Served with milk", price: 2.8, image: "/landing/en/breakfast-tea.webp" },
-        { name: "Flat White", description: "Double ristretto, steamed milk", price: 3.4, image: "/landing/en/flat-white.webp" },
-        { name: "Hot Chocolate", description: "Cream and marshmallows", price: 3.5, image: "/landing/en/hot-chocolate.webp" },
-      ],
-    },
-    {
-      name: "Cakes & Bakes",
-      items: [
-        { name: "Scones", description: "Clotted cream and jam", price: 4.5, image: "/landing/en/scones.webp" },
-        { name: "Victoria Sponge", description: "Strawberry jam and cream", price: 4, image: "/landing/en/victoria-sponge.webp" },
-      ],
-    },
-  ],
-  es: [
-    {
-      name: "Desayunos",
-      items: [
-        { name: "Churros con chocolate", description: "Recién hechos", price: 4.5, image: "/landing/es/churros.webp" },
-        { name: "Pincho de tortilla", description: "Tortilla de patatas casera", price: 4, image: "/landing/es/tortilla.webp" },
-        { name: "Café con leche", description: "En vaso, como debe ser", price: 1.8, image: "/landing/es/cafe-con-leche.webp" },
-      ],
-    },
-    {
-      name: "Tapas",
-      items: [
-        { name: "Patatas bravas", description: "Salsa brava y alioli", price: 5.5, image: "/landing/es/patatas-bravas.webp" },
-        { name: "Croquetas de jamón", description: "Caseras, de jamón ibérico", price: 6.5, image: "/landing/es/croquetas.webp" },
-      ],
-    },
-  ],
 } satisfies Record<Locale, unknown>;
 
 /** Category chips; the one at `active` is highlighted. */
 const CATEGORIES: Record<Locale, { names: string[]; active: number }> = {
   tr: { names: ["Kahvaltı", "Sıcak İçecekler", "Tatlılar"], active: 1 },
-  en: { names: ["Breakfast", "Hot Drinks", "Cakes & Bakes"], active: 1 },
-  es: { names: ["Desayunos", "Bebidas", "Tapas"], active: 0 },
 };
 
 /** Landing hero illustration: the customer menu inside a phone frame. */
@@ -92,7 +56,7 @@ export async function PhoneMockup() {
           </div>
 
           <div className="bg-brand-tint px-4 pt-6 pb-6 text-center">
-            <p className="font-heading text-2xl font-bold">{DEMO_SHOPS[locale].name}</p>
+            <p className="font-heading text-2xl font-bold">{DEMO_SHOP.name}</p>
             <p className="mt-1 text-[11px] text-muted-foreground">{dict.menu.label}</p>
           </div>
 
@@ -126,7 +90,7 @@ export async function PhoneMockup() {
                         <p className="truncate text-[13px] font-medium">{item.name}</p>
                         <p className="truncate text-[11px] text-muted-foreground">{item.description}</p>
                       </div>
-                      <span className="text-[13px] font-semibold tabular-nums">{formatPrice(item.price, locale, DEMO_SHOPS[locale].currency)}</span>
+                      <span className="text-[13px] font-semibold tabular-nums">{formatPrice(item.price, locale, DEMO_SHOP.currency)}</span>
                     </li>
                   ))}
                 </ul>

@@ -6,7 +6,7 @@ import { z } from "zod";
 import type { Dictionary } from "@/i18n/dictionary";
 import { getRequestDictionary, getRequestLocale } from "@/i18n/request";
 import { createClient } from "@/lib/supabase/server";
-import { SIGN_UP_CURRENCY } from "@/lib/currency";
+import { DEFAULT_CURRENCY } from "@/lib/currency";
 import { createShop } from "@/lib/shops";
 
 export type AuthState = { error?: string; message?: string } | undefined;
@@ -75,7 +75,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   }
 
   try {
-    await createShop(data.user.id, shopName, { currency: SIGN_UP_CURRENCY[locale], menuLanguage: locale });
+    await createShop(data.user.id, shopName, { currency: DEFAULT_CURRENCY, menuLanguage: locale });
   } catch {
     // The account exists; the dashboard lets the owner create the shop later.
     console.error("Shop creation failed during sign-up");

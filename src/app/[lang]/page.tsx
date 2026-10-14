@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { AuthDialog } from "@/components/auth/auth-dialog";
 import { DemoQr } from "@/components/demo-qr";
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Logo } from "@/components/logo";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { PhoneMockup } from "@/components/phone-mockup";
@@ -22,9 +21,6 @@ export default async function Home() {
             <Logo />
           </Link>
           <nav className="flex items-center gap-2 text-sm sm:gap-4">
-            <Suspense>
-              <LocaleSwitcher />
-            </Suspense>
             <ThemeSwitcher />
             <Link href="?auth=login" scroll={false} className={buttonVariants({ variant: "ghost" })}>
               {dict.common.signIn}

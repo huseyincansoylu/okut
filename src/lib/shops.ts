@@ -4,7 +4,6 @@ import { cache } from "react";
 import { db } from "@/db";
 import { shops } from "@/db/schema";
 import type { Locale } from "@/i18n/config";
-import type { Currency } from "@/lib/currency";
 
 const TR_MAP: Record<string, string> = { ç: "c", ğ: "g", ı: "i", İ: "i", ö: "o", ş: "s", ü: "u" };
 
@@ -23,7 +22,7 @@ export function slugify(input: string) {
 export async function createShop(
   ownerId: string,
   name: string,
-  settings: { currency: Currency; menuLanguage: Locale },
+  settings: { currency: string; menuLanguage: Locale },
 ) {
   const base = slugify(name) || "dukkan";
 

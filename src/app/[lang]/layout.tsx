@@ -42,7 +42,6 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(siteOrigin()),
     title: { default: dict.meta.title, template: `%s · ${dict.meta.title}` },
     description: dict.meta.description,
-    alternates: { languages: Object.fromEntries(LOCALES.map((l) => [l, `/${l}`])) },
   };
 }
 

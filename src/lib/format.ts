@@ -22,7 +22,7 @@ export function formatPrice(value: string | number, locale: Locale, currency: st
 }
 
 /** Languages that write prices with a decimal comma ("1.250,50"). */
-const DECIMAL_COMMA: ReadonlySet<Locale> = new Set(["tr", "es"]);
+const DECIMAL_COMMA: ReadonlySet<Locale> = new Set(["tr"]);
 
 /** "1250.50" → "1250,50" (tr, es) or "1250.50" (en) for editing in a price input. */
 export function priceInputValue(value: string, locale: Locale) {

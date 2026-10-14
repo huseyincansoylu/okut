@@ -1,23 +1,23 @@
 # Okut
 
-**QR-code digital menus for cafés and restaurants.** Owners build their menu in a dashboard and print a QR table card; customers scan it and the menu opens in their phone's browser, in their own language. No app, no sign-up.
+**QR-code digital menus for cafés and restaurants.** Owners build their menu in a dashboard and print a QR table card; customers scan it and the menu opens in their phone's browser. No app, no sign-up.
 
-**Live:** [okut.vercel.app](https://okut.vercel.app) · Demo menus: [Istanbul (TRY)](https://okut.vercel.app/menu/okut-cafe-istanbul) · [London (GBP)](https://okut.vercel.app/menu/okut-cafe-london) · [Madrid (EUR)](https://okut.vercel.app/menu/okut-cafe-madrid)
+**Live:** [okut.vercel.app](https://okut.vercel.app) · Demo menu: [Okut Cafe, Istanbul](https://okut.vercel.app/menu/okut-cafe-istanbul)
 
-*Okut* is Turkish for "scan it". The app is available in English, Turkish and Spanish. The logo's "o" is a QR code's finder pattern, and the brand colour is *tavşan kanı*, the deep red of well-brewed Turkish tea. Light and dark themes follow the device setting, or a light/dark/system switch in the header (remembered per device, applied before first paint so there's no flash). QR codes and the printable table card always stay light so cameras and printers read them.
+*Okut* is Turkish for "scan it". The product targets cafés in Turkey, so the interface is in **Turkish**; this README is in English for reviewers. The app is built for more languages (see [Internationalization](#internationalization)), and it briefly shipped in English and Spanish before I narrowed the scope to one market. The logo's "o" is a QR code's finder pattern, and the brand colour is *tavşan kanı*, the deep red of well-brewed Turkish tea. Light and dark themes follow the device setting, or a light/dark/system switch in the header (remembered per device, applied before first paint so there's no flash). QR codes and the printable table card always stay light so cameras and printers read them.
 
 | | |
 |---|---|
 | **Stack** | Next.js 16 (App Router, Server Actions, Cache Components) · React 19 · TypeScript · Supabase (Auth, Postgres, Storage) · Drizzle ORM · Zod · Tailwind CSS 4 · shadcn/ui |
 | **Hosting** | Vercel (app) · Supabase (database, auth, file storage) |
-| **Highlights** | Multi-tenant authorization in code with RLS as a backstop · per-language static prerendering with typed dictionaries · tag-based cache invalidation · client-side image compression · locale-aware currency formatting |
+| **Highlights** | Multi-tenant authorization in code with RLS as a backstop · static prerendering with typed dictionaries · tag-based cache invalidation · client-side image compression · locale-aware currency formatting |
 
 ---
 
 ## Try it
 
-1. Open [okut.vercel.app](https://okut.vercel.app). You land on `/en`, `/tr` or `/es` depending on your browser language; switch with the flag menu in the header.
-2. Scan the QR code in the "Live demo" section with your phone (or click "Open the menu on this device"). Each language shows a café typical of its country: a Turkish café in lira, a London café in pounds, a Madrid café in euros.
+1. Open [okut.vercel.app](https://okut.vercel.app). The interface is in Turkish; your browser's translate feature works well on it.
+2. Scan the QR code in the "Canlı demo" (live demo) section with your phone, or click "Menüyü bu cihazda aç" (open the menu on this device), to see Okut Cafe's menu as a customer would.
 3. Tap a menu item to open its detail sheet.
 4. Click **Create your shop** to try the dashboard: add categories, products and photos, mark items sold out, download your QR code or print a table card.
 
@@ -34,15 +34,14 @@
 **For customers**
 - Mobile-first menu with sticky category navigation and a bottom-sheet detail view for each item.
 - Guest Wi-Fi behind a header icon: a bottom sheet on phones (a dialog on larger screens) with a one-tap copy for the password.
-- Opens in the phone's language; prices follow that language's conventions (`£3.50`, `3,50 €`, `₺650`).
 - Served from cache, refreshed the moment the owner saves a change.
 
 ## Architecture
 
 ```mermaid
 flowchart TB
-    phone["Customer's phone<br/>scans /menu/okut-cafe-london"] --> proxy
-    owner["Shop owner<br/>/en/dashboard"] --> proxy
+    phone["Customer's phone<br/>scans /menu/okut-cafe-istanbul"] --> proxy
+    owner["Shop owner<br/>/tr/dashboard"] --> proxy
 
     subgraph vercel["Vercel · Next.js 16"]
         proxy["proxy.ts<br/>• language redirect<br/>• Supabase session refresh<br/>• dashboard guard"]
@@ -84,8 +83,8 @@ erDiagram
         text name
         text logo_url
         text theme "header color preset"
-        text currency "TRY, EUR or GBP, set from the sign-up language"
-        text menu_language "en, tr or es"
+        text currency "TRY for now"
+        text menu_language "tr for now"
         text wifi_name "optional"
         text wifi_password "optional, shown on the menu"
     }
@@ -119,19 +118,21 @@ Deleting a user cascades to their shop, categories and products.
 - **Uploads go through the server.** Photos are validated (type and size, also enforced by the bucket), uploaded with the secret key only after the ownership check, and old files are deleted when replaced.
 - **CSRF protection.** Mutations are Server Actions, which Next.js only accepts from the app's own origin.
 - **Safe post-login redirects.** The `next` parameter is resolved as a URL and rejected unless it stays on the site, which blocks tricks like `/\evil.com`.
-- **Read-only demos without special cases.** The demo shops have `owner_id = NULL`. Since every dashboard query looks up "the shop owned by this user", no account can ever reach them; no `isDemo` flag needed.
+- **Read-only demo without special cases.** The demo shop has `owner_id = NULL`. Since every dashboard query looks up "the shop owned by this user", no account can ever reach it; no `isDemo` flag needed.
 
 ### Internationalization
-- **Language in the URL.** Every page lives under `app/[lang]` and `generateStaticParams` prerenders `/en`, `/tr` and `/es` separately, so pages stay static while being fully translated.
-- **QR codes have no language.** A printed code points to `/menu/<slug>`; `proxy.ts` redirects it to the visitor's saved choice or their `Accept-Language`. One QR serves every tourist.
-- **Typed dictionaries.** Turkish and Spanish are typed against the English source, so a missing or misspelled key fails the build.
+The app currently serves Turkish only, but it is structured for more languages; adding one means listing it in `src/i18n/config.ts` and adding a dictionary. It ran in English, Turkish and Spanish before the scope was narrowed, and old `/en` and `/es` links redirect to Turkish.
+
+- **Language in the URL.** Every page lives under `app/[lang]` and `generateStaticParams` prerenders each language, so pages stay static while being fully translated.
+- **QR codes have no language.** A printed code points to `/menu/<slug>`; `proxy.ts` adds the language (the visitor's saved choice, else their `Accept-Language`), so the same printed code would serve every language.
+- **Typed dictionaries.** Other languages are typed against the Turkish source, so a missing or misspelled key fails the build.
 - **Right API for each context.** Server Components read the language with `next/root-params`. Server Actions can't, so the proxy keeps a locale cookie in sync with the URL for them.
 - **Translatable content.** Categories and products have a `translations` JSON column. A visitor reading a language other than the shop's sees their translation, then English, then the original text.
-- **Locale-aware money.** Prices are stored as `numeric(10,2)` and formatted with `Intl.NumberFormat` in the visitor's language and the shop's currency. Owners type prices the way they write them (`1.250,50` in Turkish and Spanish, `1,250.50` in English). A shop's currency comes from its sign-up language: TRY, EUR or GBP.
+- **Locale-aware money.** Prices are stored as `numeric(10,2)` and formatted with `Intl.NumberFormat` in the visitor's language and the shop's currency. Owners type prices the way they write them (`1.250,50` in Turkish). Shops price in Turkish lira for now; the currency column allows others later.
 
 ### Performance
 - **Cached menus with precise invalidation.** `getPublicMenu` uses `"use cache"` and tags each entry with `menu:<shopId>`. Owner edits call `updateTag()`, so only that shop's menu is regenerated. Unknown slugs are cached for minutes instead of forever, so a newly created shop never gets stuck on a cached 404.
-- **Static where possible.** The landing page, including its QR code, is prerendered per language; the public menu uses Partial Prerendering.
+- **Static where possible.** The landing page, including its QR code, is prerendered; the public menu uses Partial Prerendering.
 - **Small images.** Photos are compressed in the browser before upload and served through `next/image`.
 
 ## Project structure
@@ -139,20 +140,20 @@ Deleting a user cascades to their shop, categories and products.
 ```
 src/
 ├── app/
-│   ├── [lang]/                 # Every page, prerendered per language (en, tr, es)
+│   ├── [lang]/                 # Every page, prerendered per language (tr today)
 │   │   ├── page.tsx            # Landing page
 │   │   ├── dashboard/          # Owner dashboard: overview, menu editor, QR codes, settings
 │   │   └── menu/[slug]/        # Public, cached customer menu
 │   └── auth/                   # Sign-in / sign-up Server Actions, email confirmation
-├── components/                 # Auth dialog, language menu, landing sections, shadcn/ui
+├── components/                 # Auth dialog, theme menu, landing sections, shadcn/ui
 ├── db/schema.ts                # Drizzle schema (single source of truth for migrations)
 ├── i18n/                       # Locales, typed dictionaries, server/client helpers
 ├── lib/                        # Auth, storage, menu caching, currency, QR, formatting
 └── proxy.ts                    # Language redirects, session refresh, dashboard guard
 drizzle/                        # Generated SQL migrations
 scripts/
-├── seed-demo-menu.mts          # Creates the three read-only demo cafés
-├── demo-menus/                 # Menu data per country
+├── seed-demo-menu.mts          # Creates the read-only demo café
+├── demo-menus/                 # Demo menu data
 └── demo-images/                # Demo photos (see CREDITS.md)
 ```
 
@@ -164,7 +165,7 @@ scripts/
 pnpm install
 cp .env.example .env.local   # fill in from Supabase: Connect, Project Settings → API Keys
 pnpm db:migrate              # tables and the menu-images storage bucket
-pnpm db:seed                 # optional: the three demo cafés
+pnpm db:seed                 # optional: the demo café
 pnpm dev                     # http://localhost:3000
 ```
 
@@ -178,7 +179,7 @@ pnpm dev                     # http://localhost:3000
 | `pnpm db:generate` | Generate a migration from schema changes |
 | `pnpm db:migrate` | Apply migrations |
 | `pnpm db:studio` | Drizzle Studio |
-| `pnpm db:seed` | Create or refresh the demo cafés |
+| `pnpm db:seed` | Create or refresh the demo café |
 
 ## Deploying
 

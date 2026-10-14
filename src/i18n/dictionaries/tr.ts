@@ -1,6 +1,6 @@
-import type { Dictionary } from "../dictionary";
-
-const tr: Dictionary = {
+// Source dictionary: other languages must provide every key (see ../dictionary.ts).
+// Placeholders like {count} are filled with `fill()` from ../config.
+const tr = {
   meta: {
     title: "Okut",
     tagline: "Menünüz, misafirinizin dilinde.",
@@ -22,7 +22,6 @@ const tr: Dictionary = {
     signOut: "Çıkış yap",
     getStarted: "Ücretsiz başla",
     createShop: "Dükkanını oluştur",
-    language: "Dil",
     theme: "Tema",
     themeLight: "Açık",
     themeDark: "Koyu",
