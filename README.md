@@ -9,7 +9,7 @@ The name comes from the Turkish word *okut*: "scan it". The whole app is availab
 **For shop owners**
 - **Menu management:** create categories and products with prices, descriptions and photos; edit or delete them inline.
 - **Sold-out toggle:** mark an item as unavailable in one click (optimistic UI). It stays on the menu, greyed out with a "Sold out" badge.
-- **Menu translations:** categories and products can store translations (the Okut Cafe demo ships with English text). Visitors reading another language get their translation, then English, then the original.
+- **Menu translations:** categories and products can store translations. Visitors reading another language get their translation, then English, then the original.
 - **Shop settings:** rename the shop (the menu URL stays the same, so printed QR codes keep working), upload a logo and pick a header color with a live preview.
 - **Currencies:** a shop's currency comes from the language it signs up in: Turkish → TRY, Spanish → EUR, English → GBP. Prices are formatted the way each visitor's language writes them ("£3.50", "3,50 €").
 - **Photo uploads:** images are resized and converted to WebP in the browser before upload, so uploads stay small (~100–400 KB) even from a phone camera.
@@ -22,7 +22,7 @@ The name comes from the Turkish word *okut*: "scan it". The whole app is availab
 - Opens in the phone's language (English, Turkish or Spanish), with a language menu to switch.
 - Served from cache and refreshed as soon as the owner changes something.
 
-**Live demo:** [okut.vercel.app](https://okut.vercel.app). Scan the QR code on the landing page, or open the sample menu of **Okut Cafe** directly at [okut.vercel.app/menu/okut-cafe](https://okut.vercel.app/menu/okut-cafe). It's a read-only shop created by `pnpm db:seed` (5 categories, 20 products, 12 photos).
+**Live demo:** [okut.vercel.app](https://okut.vercel.app). Scan the QR code on the landing page to open **Okut Cafe**, a read-only demo whose menu depends on the page language: a Turkish café in TRY ([/menu/okut-cafe](https://okut.vercel.app/menu/okut-cafe)), a London café in GBP ([/menu/okut-cafe-london](https://okut.vercel.app/menu/okut-cafe-london)) or a Madrid café in EUR ([/menu/okut-cafe-madrid](https://okut.vercel.app/menu/okut-cafe-madrid)). All three are created by `pnpm db:seed` from `scripts/demo-menus/`.
 
 ## Tech stack
 
@@ -44,7 +44,7 @@ The name comes from the Turkish word *okut*: "scan it". The whole app is availab
 - **Caching.** Public menus use Next.js `"use cache"` with per-shop cache tags; owner edits call `updateTag()`, so customers see changes immediately while unchanged menus are served from cache.
 - **Internationalization.** Every page lives under `app/[lang]` (`/en`, `/tr`, `/es`) and is prerendered per language. `src/proxy.ts` sends unprefixed URLs, including printed QR codes, to the visitor's language (saved choice, then `Accept-Language`). Server Components read the language with `next/root-params`; Server Actions use a cookie the proxy keeps in sync. Dictionaries are typed against the English source, so a missing key in any language is a compile error.
 - **Session handling.** The proxy also refreshes the Supabase session on each request and protects `/[lang]/dashboard`. Public menu routes skip it entirely.
-- **Read-only demo.** The demo shop has no owner (`owner_id` is `NULL`). No account can resolve it as "their" shop, so it cannot be edited through the app.
+- **Read-only demos.** The demo shops have no owner (`owner_id` is `NULL`). No account can resolve them as "their" shop, so they cannot be edited through the app.
 
 ## Project structure
 
@@ -102,7 +102,7 @@ scripts/                        # Demo menu seed script and photos
 | `pnpm db:generate` | Generate a migration from schema changes |
 | `pnpm db:migrate` | Apply migrations to the database |
 | `pnpm db:studio` | Open Drizzle Studio |
-| `pnpm db:seed` | Create or refresh the read-only demo menu |
+| `pnpm db:seed` | Create or refresh the three read-only demo menus |
 
 ## Credits
 

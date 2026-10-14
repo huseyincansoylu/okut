@@ -1,12 +1,14 @@
 /**
- * Creates (or refreshes) the read-only demo menu at /menu/okut-cafe.
+ * Creates (or refreshes) the read-only demo menus, one per language (see
+ * src/lib/demo.ts): /menu/okut-cafe (Turkish), /menu/okut-cafe-london (English)
+ * and /menu/okut-cafe-madrid (Spanish).
  *
  *   pnpm db:seed
  *
- * The shop has no owner, so no account can sign in and edit it. Re-running
- * replaces its categories and products but keeps the shop id (and its URL).
- * Photos in scripts/demo-images (see CREDITS.md there) are uploaded to the
- * menu-images bucket under the shop's folder, overwriting earlier copies.
+ * The shops have no owner, so no account can sign in and edit them. Re-running
+ * replaces their categories and products but keeps the shop ids (and URLs).
+ * Photos in scripts/demo-images/<language>/ (see CREDITS.md there) are uploaded
+ * to the menu-images bucket under each shop's folder, overwriting earlier copies.
  * A refreshed menu is cached; restart the server / redeploy to see changes.
  */
 import { readFile } from "node:fs/promises";
@@ -15,106 +17,30 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { categories, products, shops } from "../src/db/schema.ts";
-import { DEMO_SHOP } from "../src/lib/demo.ts";
+import type { Locale } from "../src/i18n/config.ts";
+import { DEMO_SHOPS } from "../src/lib/demo.ts";
+import type { DemoMenu } from "./demo-menus/types.mts";
 
-type Item = [name: string, price: string, description?: string, isAvailable?: boolean];
-
-const MENU: Record<string, Item[]> = {
-  Kahvaltı: [
-    ["Serpme Kahvaltı (2 kişilik)", "650", "Peynir çeşitleri, zeytin, bal-kaymak, reçel, sucuklu yumurta, sınırsız çay"],
-    ["Menemen", "180", "Domates, biber ve köy yumurtası; isteğe göre soğanlı"],
-    ["Sucuklu Yumurta", "200", "Bakır sahanda kasap sucuk ve iki yumurta"],
-    ["Simit Tabağı", "120", "Taze simit, beyaz peynir, domates, salatalık"],
-  ],
-  "Sıcak İçecekler": [
-    ["Çay", "20", "İnce belli bardakta demlik çay"],
-    ["Türk Kahvesi", "70", "Yanında lokum ile"],
-    ["Espresso", "65"],
-    ["Latte", "90", "Çift shot espresso ve buharla ısıtılmış süt"],
-    ["Sahlep", "95", "Tarçınlı, kış aylarına özel", false],
-  ],
-  "Soğuk İçecekler": [
-    ["Ev Yapımı Limonata", "85", "Taze sıkılmış limon ve nane"],
-    ["Iced Latte", "100"],
-    ["Ayran", "40"],
-    ["Soda", "30"],
-  ],
-  Tatlılar: [
-    ["San Sebastian Cheesecake", "160", "Çikolata sosu ile servis edilir"],
-    ["Fıstıklı Baklava (4 dilim)", "220", "Antep fıstığı ile"],
-    ["Brownie", "120", "Sıcak servis, yanında dondurma"],
-    ["Sütlaç", "95", "Fırında, üzeri fındıklı"],
-  ],
-  Atıştırmalıklar: [
-    ["Kaşarlı Tost", "110"],
-    ["Patates Kızartması", "90", "Baharatlı, yanında ketçap ve mayonez"],
-    ["Mevsim Salata", "130", "Akdeniz yeşillikleri, nar ekşili sos"],
-  ],
-};
-
-/** English text shown when the menu is viewed in English (category or product name → translation). */
-const ENGLISH: Record<string, { name: string; description?: string }> = {
-  Kahvaltı: { name: "Breakfast" },
-  "Serpme Kahvaltı (2 kişilik)": {
-    name: "Turkish Breakfast Spread (for 2)",
-    description: "Assorted cheeses, olives, honey and clotted cream, jam, eggs with sucuk, unlimited tea",
-  },
-  Menemen: { name: "Menemen", description: "Turkish scrambled eggs with tomatoes and peppers; onions on request" },
-  "Sucuklu Yumurta": { name: "Eggs with Sucuk", description: "Spicy Turkish sausage and two eggs in a copper pan" },
-  "Simit Tabağı": { name: "Simit Plate", description: "Fresh sesame bread ring, white cheese, tomato, cucumber" },
-  "Sıcak İçecekler": { name: "Hot Drinks" },
-  Çay: { name: "Turkish Tea", description: "Brewed black tea in a tulip-shaped glass" },
-  "Türk Kahvesi": { name: "Turkish Coffee", description: "Served with Turkish delight" },
-  Espresso: { name: "Espresso" },
-  Latte: { name: "Latte", description: "Double shot espresso and steamed milk" },
-  Sahlep: { name: "Salep", description: "Warm orchid-root milk drink with cinnamon, winter special" },
-  "Soğuk İçecekler": { name: "Cold Drinks" },
-  "Ev Yapımı Limonata": { name: "Homemade Lemonade", description: "Freshly squeezed lemons and mint" },
-  "Iced Latte": { name: "Iced Latte" },
-  Ayran: { name: "Ayran", description: "Chilled salted yogurt drink" },
-  Soda: { name: "Sparkling Water" },
-  Tatlılar: { name: "Desserts" },
-  "San Sebastian Cheesecake": { name: "San Sebastian Cheesecake", description: "Served with chocolate sauce" },
-  "Fıstıklı Baklava (4 dilim)": { name: "Pistachio Baklava (4 pieces)", description: "Made with Antep pistachios" },
-  Brownie: { name: "Brownie", description: "Served warm with ice cream" },
-  Sütlaç: { name: "Rice Pudding", description: "Oven-baked, topped with hazelnuts" },
-  Atıştırmalıklar: { name: "Snacks" },
-  "Kaşarlı Tost": { name: "Cheese Toastie" },
-  "Patates Kızartması": { name: "French Fries", description: "Seasoned, with ketchup and mayonnaise" },
-  "Mevsim Salata": { name: "Seasonal Salad", description: "Mediterranean greens with pomegranate dressing" },
-};
-
-const translationsFor = (text: string) => (ENGLISH[text] ? { en: ENGLISH[text] } : {});
-
-/** Product name → photo file in scripts/demo-images. */
-const IMAGES: Record<string, string> = {
-  "Serpme Kahvaltı (2 kişilik)": "serpme-kahvalti.webp",
-  Menemen: "menemen.webp",
-  "Simit Tabağı": "simit-tabagi.webp",
-  Çay: "cay.webp",
-  "Türk Kahvesi": "turk-kahvesi.webp",
-  Latte: "latte.webp",
-  "Ev Yapımı Limonata": "limonata.webp",
-  "Iced Latte": "iced-latte.webp",
-  "San Sebastian Cheesecake": "cheesecake.webp",
-  "Fıstıklı Baklava (4 dilim)": "baklava.webp",
-  Brownie: "brownie.webp",
-  "Patates Kızartması": "patates-kizartmasi.webp",
+const MENUS: Partial<Record<Locale, () => Promise<{ menu: DemoMenu }>>> = {
+  tr: () => import("./demo-menus/tr.mts"),
+  en: () => import("./demo-menus/en.mts"),
+  es: () => import("./demo-menus/es.mts"),
 };
 
 const bucket = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY!, {
   auth: { persistSession: false, autoRefreshToken: false },
 }).storage.from("menu-images");
 
-/** Uploads every demo photo and returns product name → public URL. */
-async function uploadImages(shopId: string) {
+/** Uploads a menu's photos and returns file name → public URL. */
+async function uploadImages(shopId: string, locale: Locale, menu: DemoMenu) {
+  const files = new Set(menu.flatMap((section) => section.items.flatMap((item) => (item.image ? [item.image] : []))));
   const urls = new Map<string, string>();
-  for (const [productName, file] of Object.entries(IMAGES)) {
+  for (const file of files) {
     const path = `${shopId}/demo/${file}`;
-    const body = await readFile(new URL(`./demo-images/${file}`, import.meta.url));
+    const body = await readFile(new URL(`./demo-images/${locale}/${file}`, import.meta.url));
     const { error } = await bucket.upload(path, body, { contentType: "image/webp", upsert: true });
-    if (error) throw new Error(`Uploading ${file} failed: ${error.message}`);
-    urls.set(productName, bucket.getPublicUrl(path).data.publicUrl);
+    if (error) throw new Error(`Uploading ${locale}/${file} failed: ${error.message}`);
+    urls.set(file, bucket.getPublicUrl(path).data.publicUrl);
   }
   return urls;
 }
@@ -123,41 +49,50 @@ const client = postgres(process.env.DIRECT_URL ?? process.env.DATABASE_URL!, { p
 const db = drizzle(client);
 
 try {
-  await db.transaction(async (tx) => {
-    const [existing] = await tx.select().from(shops).where(eq(shops.slug, DEMO_SHOP.slug));
-    if (existing?.ownerId) {
-      throw new Error(`/menu/${DEMO_SHOP.slug} belongs to a real account; refusing to overwrite it.`);
-    }
+  for (const [locale, load] of Object.entries(MENUS) as [Locale, () => Promise<{ menu: DemoMenu }>][]) {
+    const { menu } = await load();
+    const demo = DEMO_SHOPS[locale];
 
-    const shop = existing ?? (await tx.insert(shops).values({ ...DEMO_SHOP, ownerId: null }).returning())[0];
-    const imageUrls = await uploadImages(shop.id);
-    // Products are removed by ON DELETE CASCADE.
-    await tx.delete(categories).where(eq(categories.shopId, shop.id));
+    await db.transaction(async (tx) => {
+      const [existing] = await tx.select().from(shops).where(eq(shops.slug, demo.slug));
+      if (existing?.ownerId) {
+        throw new Error(`/menu/${demo.slug} belongs to a real account; refusing to overwrite it.`);
+      }
 
-    let productCount = 0;
-    for (const [categoryIndex, [categoryName, items]] of Object.entries(MENU).entries()) {
-      const [category] = await tx
-        .insert(categories)
-        .values({ shopId: shop.id, name: categoryName, translations: translationsFor(categoryName), sortOrder: categoryIndex })
-        .returning();
+      const values = { ...demo, ownerId: null };
+      const [shop] = existing
+        ? await tx.update(shops).set(values).where(eq(shops.id, existing.id)).returning()
+        : await tx.insert(shops).values(values).returning();
+      const imageUrls = await uploadImages(shop.id, locale, menu);
+      // Products are removed by ON DELETE CASCADE.
+      await tx.delete(categories).where(eq(categories.shopId, shop.id));
 
-      await tx.insert(products).values(
-        items.map(([name, price, description, isAvailable = true], sortOrder) => ({
-          categoryId: category.id,
-          name,
-          price,
-          description: description ?? null,
-          translations: translationsFor(name),
-          imageUrl: imageUrls.get(name) ?? null,
-          isAvailable,
-          sortOrder,
-        })),
+      let productCount = 0;
+      for (const [categoryIndex, section] of menu.entries()) {
+        const [category] = await tx
+          .insert(categories)
+          .values({ shopId: shop.id, name: section.category, sortOrder: categoryIndex })
+          .returning();
+
+        await tx.insert(products).values(
+          section.items.map((item, sortOrder) => ({
+            categoryId: category.id,
+            name: item.name,
+            price: item.price,
+            description: item.description ?? null,
+            imageUrl: item.image ? imageUrls.get(item.image)! : null,
+            isAvailable: !item.soldOut,
+            sortOrder,
+          })),
+        );
+        productCount += section.items.length;
+      }
+
+      console.log(
+        `✓ ${locale}: "${shop.name}" ${menu.length} categories, ${productCount} items, ${imageUrls.size} photos → /menu/${shop.slug}`,
       );
-      productCount += items.length;
-    }
-
-    console.log(`✓ "${shop.name}": ${Object.keys(MENU).length} kategori, ${productCount} ürün, ${imageUrls.size} fotoğraf → /menu/${shop.slug}`);
-  });
+    });
+  }
 } finally {
   await client.end();
 }

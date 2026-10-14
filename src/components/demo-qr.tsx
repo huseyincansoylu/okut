@@ -4,7 +4,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { fill } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
-import { DEMO_SHOP } from "@/lib/demo";
+import { DEMO_SHOPS } from "@/lib/demo";
 import { qrSvg } from "@/lib/qr";
 import { siteOrigin } from "@/lib/site-url";
 
@@ -15,8 +15,10 @@ export async function DemoQr() {
 
   const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
   const t = dict.landing;
-  // The QR has no language prefix: each phone opens the menu in its own language.
-  const path = `/menu/${DEMO_SHOP.slug}`;
+  // This page's language picks the demo café; the QR has no language prefix, so
+  // each phone still shows the menu's interface in its own language.
+  const demo = DEMO_SHOPS[locale];
+  const path = `/menu/${demo.slug}`;
   const svg = await qrSvg(`${siteOrigin()}${path}`);
 
   return (
@@ -32,7 +34,7 @@ export async function DemoQr() {
           {t.demoBadge}
         </p>
         <h2 className="text-2xl font-semibold">{t.demoTitle}</h2>
-        <p className="max-w-md opacity-70">{fill(t.demoText, { shop: DEMO_SHOP.name })}</p>
+        <p className="max-w-md opacity-70">{fill(t.demoText, { shop: demo.name })}</p>
         <Link
           href={`/${locale}${path}`}
           target="_blank"

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getDictionary, getLocale } from "@/i18n/server";
-import { DEMO_SHOP } from "@/lib/demo";
+import { DEMO_SHOPS } from "@/lib/demo";
 import { Logo } from "./logo";
 
 const REPO_URL = "https://github.com/huseyincansoylu/okut";
@@ -22,7 +22,7 @@ export async function SiteFooter() {
         <nav className="flex gap-12 text-sm">
           <div className="flex flex-col gap-2">
             <p className="font-medium">{t.footerProduct}</p>
-            <Link href={`/${locale}/menu/${DEMO_SHOP.slug}`} target="_blank" className="opacity-70 hover:opacity-100">
+            <Link href={`/${locale}/menu/${DEMO_SHOPS[locale].slug}`} target="_blank" className="opacity-70 hover:opacity-100">
               {t.footerSampleMenu}
             </Link>
             <Link href="?auth=signup" scroll={false} className="opacity-70 hover:opacity-100">
