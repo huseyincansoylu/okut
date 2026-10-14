@@ -47,7 +47,6 @@ const tr: Dictionary = {
     footerTagline: "Kafe ve restoranlar için QR menü. Menünü oluştur, masaya koy, müşterin okutsun.",
     footerProduct: "Ürün",
     footerProject: "Proje",
-    footerSampleMenu: "Örnek menü",
   },
   auth: {
     email: "E-posta",

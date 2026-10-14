@@ -47,7 +47,6 @@ const en = {
     footerTagline: "QR menus for cafés and restaurants. Build your menu, put it on the table, let customers scan.",
     footerProduct: "Product",
     footerProject: "Project",
-    footerSampleMenu: "Sample menu",
   },
   auth: {
     email: "Email",

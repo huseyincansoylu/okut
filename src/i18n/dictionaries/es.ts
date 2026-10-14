@@ -51,7 +51,6 @@ const es: Dictionary = {
     footerTagline: "Menús QR para cafeterías y restaurantes. Crea tu menú, ponlo en la mesa y deja que tus clientes lo escaneen.",
     footerProduct: "Producto",
     footerProject: "Proyecto",
-    footerSampleMenu: "Menú de ejemplo",
   },
   auth: {
     email: "Correo electrónico",
