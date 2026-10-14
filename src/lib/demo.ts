@@ -2,5 +2,5 @@
 // from the landing page. Not server-only: the seed script imports this outside Next.js.
 export const DEMO_SHOP = {
   name: "Okut Cafe",
-  slug: "okut-cafe-istanbul",
+  slug: "okut-cafe",
 } as const;

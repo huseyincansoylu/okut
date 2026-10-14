@@ -1,5 +1,5 @@
 /**
- * Creates (or refreshes) the read-only demo menu at /menu/okut-cafe-istanbul
+ * Creates (or refreshes) the read-only demo menu at /menu/okut-cafe
  * (see src/lib/demo.ts).
  *
  *   pnpm db:seed

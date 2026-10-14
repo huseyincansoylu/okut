@@ -23,8 +23,7 @@ const nextConfig: NextConfig = {
       { source: "/:lang(tr|en|es)", destination: "/", permanent: true },
       { source: "/:lang(tr|en|es)/:path*", destination: "/:path*", permanent: true },
       // Earlier demo cafés.
-      { source: "/menu/okut-cafe", destination: "/menu/okut-cafe-istanbul", permanent: false },
-      { source: "/menu/okut-cafe-:city(london|madrid)", destination: "/menu/okut-cafe-istanbul", permanent: false },
+      { source: "/menu/okut-cafe-:city(istanbul|london|madrid)", destination: "/menu/okut-cafe", permanent: false },
     ];
   },
   images: {

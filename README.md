@@ -2,7 +2,7 @@
 
 **QR-code digital menus for cafés and restaurants.** Owners build their menu in a dashboard and print a QR table card; customers scan it and the menu opens in their phone's browser. No app, no sign-up.
 
-**Live:** [okut.vercel.app](https://okut.vercel.app) · Demo menu: [Okut Cafe, Istanbul](https://okut.vercel.app/menu/okut-cafe-istanbul)
+**Live:** [okut.vercel.app](https://okut.vercel.app) · Demo menu: [Okut Cafe](https://okut.vercel.app/menu/okut-cafe)
 
 *Okut* is Turkish for "scan it". The product targets cafés in Turkey, so the interface is in **Turkish**; this README is in English for reviewers. It briefly shipped in English and Spanish too; I narrowed the scope to one market and removed the multi-language layer rather than keep machinery no page used (see [Single language](#single-language)). The logo's "o" is a QR code's finder pattern, and the brand colour is *tavşan kanı*, the deep red of well-brewed Turkish tea. Light and dark themes follow the device setting, or a light/dark/system switch in the header (remembered per device, applied before first paint so there's no flash). QR codes and the printable table card always stay light so cameras and printers read them.
 
@@ -40,7 +40,7 @@
 
 ```mermaid
 flowchart TB
-    phone["Customer's phone<br/>scans /menu/okut-cafe-istanbul"] --> proxy
+    phone["Customer's phone<br/>scans /menu/okut-cafe"] --> proxy
     owner["Shop owner<br/>/dashboard"] --> proxy
 
     subgraph vercel["Vercel · Next.js 16"]
