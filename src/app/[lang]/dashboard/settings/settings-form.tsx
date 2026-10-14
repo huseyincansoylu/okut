@@ -12,7 +12,15 @@ import { MENU_THEMES, menuTheme, type MenuTheme } from "@/lib/menu-themes";
 import { updateShopSettings } from "../actions";
 import { ImageField } from "../_components/image-field";
 
-export function SettingsForm({ shop }: { shop: { name: string; logoUrl: string | null; theme: string } }) {
+type ShopSettings = {
+  name: string;
+  logoUrl: string | null;
+  theme: string;
+  wifiName: string | null;
+  wifiPassword: string | null;
+};
+
+export function SettingsForm({ shop }: { shop: ShopSettings }) {
   const { dict } = useI18n();
   const t = dict.dashboard.settings;
   const [state, action, pending] = useActionState(updateShopSettings, undefined);
@@ -70,6 +78,28 @@ export function SettingsForm({ shop }: { shop: { name: string; logoUrl: string |
                   {t.themes[key]}
                 </label>
               ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="grid gap-3">
+            <legend className="text-sm font-medium">{t.wifiTitle}</legend>
+            <p className="-mt-1 text-xs text-muted-foreground">{t.wifiText}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="wifi-name">{t.wifiName}</Label>
+                <Input id="wifi-name" name="wifiName" maxLength={64} defaultValue={shop.wifiName ?? ""} autoComplete="off" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="wifi-password">{t.wifiPassword}</Label>
+                <Input
+                  id="wifi-password"
+                  name="wifiPassword"
+                  maxLength={64}
+                  defaultValue={shop.wifiPassword ?? ""}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+              </div>
             </div>
           </fieldset>
 

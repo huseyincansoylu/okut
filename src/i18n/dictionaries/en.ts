@@ -157,6 +157,10 @@ const en = {
       preview: "Preview",
       previewText: "This is how the top of your menu will look.",
       previewLogoHint: "A new logo appears in the preview after you save.",
+      wifiTitle: "Guest Wi-Fi",
+      wifiText: "Optional. If you add a password, customers see it at the top of your menu.",
+      wifiName: "Network name",
+      wifiPassword: "Password",
       themes: { sage: "Sage", sky: "Sky", rose: "Blush", violet: "Lavender", sand: "Sand", night: "Night" },
     },
   },
@@ -170,6 +174,10 @@ const en = {
     metaTitle: "{shop} · Menu",
     metaDescription: "{shop} menu and prices",
     logoAlt: "{shop} logo",
+    wifi: "Wi-Fi",
+    wifiPassword: "Password",
+    copy: "Copy",
+    copied: "Copied",
   },
   errors: {
     shopNameLength: "Shop name must be at least 2 characters.",
@@ -191,6 +199,7 @@ const en = {
     imageType: "Image must be WebP, JPEG or PNG.",
     imageSize: "Image can be at most 2 MB.",
     imageUpload: "The image couldn't be uploaded. Please try again.",
+    wifiTooLong: "Wi-Fi name and password can be at most 64 characters.",
   },
 };
 

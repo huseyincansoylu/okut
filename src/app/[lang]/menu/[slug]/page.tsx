@@ -9,6 +9,7 @@ import { getDictionary, getLocale } from "@/i18n/server";
 import { getPublicMenu, localizeMenu, type PublicMenu } from "@/lib/menu";
 import { menuTheme } from "@/lib/menu-themes";
 import { MenuItem } from "./menu-item";
+import { WifiBadge } from "./wifi-badge";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/menu/[slug]">): Promise<Metadata> {
   const [menu, dict] = await Promise.all([getPublicMenu((await params).slug), getDictionary()]);
@@ -49,6 +50,7 @@ async function Menu({ params }: Pick<PageProps<"/[lang]/menu/[slug]">, "params">
         )}
         <h1 className="font-heading text-4xl font-bold">{menu.shop.name}</h1>
         <p className="mt-2 text-sm opacity-60">{dict.menu.label}</p>
+        {menu.shop.wifiPassword && <WifiBadge name={menu.shop.wifiName} password={menu.shop.wifiPassword} />}
       </header>
 
       {menu.sections.length === 0 ? (

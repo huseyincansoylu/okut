@@ -161,6 +161,10 @@ const es: Dictionary = {
       preview: "Vista previa",
       previewText: "Así se verá la parte superior de tu menú.",
       previewLogoHint: "El nuevo logotipo aparece en la vista previa después de guardar.",
+      wifiTitle: "Wi-Fi para clientes",
+      wifiText: "Opcional. Si añades una contraseña, tus clientes la verán en la parte superior del menú.",
+      wifiName: "Nombre de la red",
+      wifiPassword: "Contraseña",
       themes: { sage: "Salvia", sky: "Cielo", rose: "Rosa", violet: "Lavanda", sand: "Arena", night: "Noche" },
     },
   },
@@ -174,6 +178,10 @@ const es: Dictionary = {
     metaTitle: "{shop} · Menú",
     metaDescription: "Menú y precios de {shop}",
     logoAlt: "Logotipo de {shop}",
+    wifi: "Wi-Fi",
+    wifiPassword: "Contraseña",
+    copy: "Copiar",
+    copied: "Copiado",
   },
   errors: {
     shopNameLength: "El nombre del local debe tener al menos 2 caracteres.",
@@ -195,6 +203,7 @@ const es: Dictionary = {
     imageType: "La imagen debe ser WebP, JPEG o PNG.",
     imageSize: "La imagen puede pesar como máximo 2 MB.",
     imageUpload: "No se pudo subir la imagen. Vuelve a intentarlo.",
+    wifiTooLong: "El nombre y la contraseña del Wi-Fi pueden tener como máximo 64 caracteres.",
   },
 };
 

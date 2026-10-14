@@ -48,6 +48,9 @@ export const shops = pgTable(
     // Language the owner writes the menu in (a locale from src/i18n/config.ts);
     // translations cover the other languages.
     menuLanguage: text("menu_language").notNull().default("tr"),
+    // Optional guest Wi-Fi shown on the public menu; anyone with the menu link can see it.
+    wifiName: text("wifi_name"),
+    wifiPassword: text("wifi_password"),
     ...timestamps,
   },
   (t) => [uniqueIndex("shops_slug_idx").on(t.slug), index("shops_owner_idx").on(t.ownerId)],

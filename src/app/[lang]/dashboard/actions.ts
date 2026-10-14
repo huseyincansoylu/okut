@@ -35,10 +35,21 @@ export async function createMyShop(_prev: ShopFormState, formData: FormData): Pr
   refresh();
 }
 
+function optionalText(tooLong: string) {
+  return z
+    .string()
+    .trim()
+    .max(64, tooLong)
+    .transform((v) => v || null);
+}
+
 function settingsSchema(dict: Dictionary) {
   return z.object({
     name: shopName(dict),
     theme: z.string().refine(isMenuTheme, dict.errors.invalidTheme),
+    // Optional; empty means "don't show Wi-Fi on the menu".
+    wifiName: optionalText(dict.errors.wifiTooLong),
+    wifiPassword: optionalText(dict.errors.wifiTooLong),
   });
 }
 
@@ -50,6 +61,8 @@ export async function updateShopSettings(_prev: ShopFormState, formData: FormDat
   const parsed = settingsSchema(dict).safeParse({
     name: formData.get("name"),
     theme: formData.get("theme"),
+    wifiName: formData.get("wifiName") ?? "",
+    wifiPassword: formData.get("wifiPassword") ?? "",
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 

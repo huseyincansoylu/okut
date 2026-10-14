@@ -157,6 +157,10 @@ const tr: Dictionary = {
       preview: "Önizleme",
       previewText: "Menünün üst kısmı böyle görünecek.",
       previewLogoHint: "Yeni logo kaydettikten sonra önizlemede görünür.",
+      wifiTitle: "Misafir Wi-Fi",
+      wifiText: "İsteğe bağlı. Şifre eklersen müşterilerin menünün üst kısmında görür.",
+      wifiName: "Ağ adı",
+      wifiPassword: "Şifre",
       themes: { sage: "Adaçayı", sky: "Gökyüzü", rose: "Pudra", violet: "Lavanta", sand: "Kum", night: "Gece" },
     },
   },
@@ -170,6 +174,10 @@ const tr: Dictionary = {
     metaTitle: "{shop} · Menü",
     metaDescription: "{shop} menüsü ve fiyatları",
     logoAlt: "{shop} logosu",
+    wifi: "Wi-Fi",
+    wifiPassword: "Şifre",
+    copy: "Kopyala",
+    copied: "Kopyalandı",
   },
   errors: {
     shopNameLength: "Dükkan adı en az 2 karakter olmalı.",
@@ -191,6 +199,7 @@ const tr: Dictionary = {
     imageType: "Fotoğraf WebP, JPEG veya PNG olmalı.",
     imageSize: "Fotoğraf en fazla 2 MB olabilir.",
     imageUpload: "Fotoğraf yüklenemedi. Lütfen tekrar deneyin.",
+    wifiTooLong: "Wi-Fi adı ve şifresi en fazla 64 karakter olabilir.",
   },
 };
 

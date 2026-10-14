@@ -20,6 +20,8 @@ export async function getPublicMenu(slug: string) {
       theme: shops.theme,
       currency: shops.currency,
       menuLanguage: shops.menuLanguage,
+      wifiName: shops.wifiName,
+      wifiPassword: shops.wifiPassword,
     })
     .from(shops)
     .where(eq(shops.slug, slug))
