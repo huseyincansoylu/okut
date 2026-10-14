@@ -4,7 +4,6 @@ import type { Locale } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { DEMO_SHOPS } from "@/lib/demo";
 import { formatPrice } from "@/lib/format";
-import { MENU_THEMES } from "@/lib/menu-themes";
 
 // A static preview of each language's demo café; items and prices match scripts/demo-menus/.
 const SECTIONS = {
@@ -75,16 +74,16 @@ export async function PhoneMockup() {
   return (
     <div aria-hidden className="relative mx-auto w-[19rem] [zoom:0.7]">
       {/* Side buttons */}
-      <span className="absolute top-28 -left-[3px] h-8 w-[3px] rounded-l bg-neutral-800" />
-      <span className="absolute top-40 -left-[3px] h-14 w-[3px] rounded-l bg-neutral-800" />
-      <span className="absolute top-36 -right-[3px] h-20 w-[3px] rounded-r bg-neutral-800" />
+      <span className="absolute top-28 -left-[3px] h-8 w-[3px] rounded-l bg-[#3a241b]" />
+      <span className="absolute top-40 -left-[3px] h-14 w-[3px] rounded-l bg-[#3a241b]" />
+      <span className="absolute top-36 -right-[3px] h-20 w-[3px] rounded-r bg-[#3a241b]" />
 
-      <div className="rounded-[3.25rem] bg-neutral-900 p-3 shadow-2xl ring-1 ring-neutral-700">
+      <div className="rounded-[3.25rem] bg-[#24150f] p-3 shadow-2xl shadow-[#2a1610]/25 ring-1 ring-[#3a241b]">
         <div className="relative flex h-[38rem] flex-col overflow-hidden rounded-[2.5rem] bg-background">
           {/* Status bar and dynamic island */}
-          <div className={`relative flex items-center justify-between px-7 pt-3.5 pb-1 text-[11px] font-semibold ${MENU_THEMES.sage.header}`}>
+          <div className={`relative flex items-center justify-between px-7 pt-3.5 pb-1 text-[11px] font-semibold bg-brand-tint`}>
             <span>9:41</span>
-            <span className="absolute top-2.5 left-1/2 h-7 w-24 -translate-x-1/2 rounded-full bg-neutral-900" />
+            <span className="absolute top-2.5 left-1/2 h-7 w-24 -translate-x-1/2 rounded-full bg-[#24150f]" />
             <span className="flex items-center gap-1">
               <SignalIcon className="size-3" />
               <WifiIcon className="size-3" />
@@ -92,16 +91,16 @@ export async function PhoneMockup() {
             </span>
           </div>
 
-          <div className={`px-4 pt-6 pb-6 text-center ${MENU_THEMES.sage.header}`}>
+          <div className="bg-brand-tint px-4 pt-6 pb-6 text-center">
             <p className="font-heading text-2xl font-bold">{DEMO_SHOPS[locale].name}</p>
-            <p className="mt-1 text-[11px] opacity-60">{dict.menu.label}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">{dict.menu.label}</p>
           </div>
 
           <div className="flex gap-1.5 overflow-hidden border-b px-4 py-2.5">
             {CATEGORIES[locale].names.map((category, i) => (
               <span
                 key={category}
-                className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] ${i === CATEGORIES[locale].active ? "bg-foreground text-background" : ""}`}
+                className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] ${i === CATEGORIES[locale].active ? "border-primary bg-primary text-primary-foreground" : "text-muted-foreground"}`}
               >
                 {category}
               </span>

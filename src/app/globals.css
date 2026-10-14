@@ -55,7 +55,7 @@
   /* Okut brand: "tavşan kanı", the colour of well-brewed Turkish tea. */
   --brand-tint: oklch(0.940 0.019 55.1);
   --brand-amber: oklch(0.701 0.134 62.5);
-  --background: oklch(1 0 0);
+  --background: oklch(0.978 0.004 56.4);
   --foreground: oklch(0.226 0.035 37.5);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.226 0.035 37.5);
@@ -65,13 +65,13 @@
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.940 0.019 55.1);
   --secondary-foreground: oklch(0.226 0.035 37.5);
-  --muted: oklch(0.974 0.008 56.3);
-  --muted-foreground: oklch(0.485 0.029 43.0);
+  --muted: oklch(0.950 0.008 56.3);
+  --muted-foreground: oklch(0.476 0.027 45.3);
   --accent: oklch(0.940 0.019 55.1);
   --accent-foreground: oklch(0.226 0.035 37.5);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.910 0.015 54.9);
-  --input: oklch(0.910 0.015 54.9);
+  --border: oklch(0.929 0.008 56.3);
+  --input: oklch(0.929 0.008 56.3);
   --ring: oklch(0.426 0.142 32.0 / 50%);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -85,7 +85,7 @@
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.940 0.019 55.1);
   --sidebar-accent-foreground: oklch(0.226 0.035 37.5);
-  --sidebar-border: oklch(0.910 0.015 54.9);
+  --sidebar-border: oklch(0.929 0.008 56.3);
   --sidebar-ring: oklch(0.426 0.142 32.0 / 50%);
 }
 
