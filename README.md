@@ -1,109 +1,187 @@
 # Okut
 
-**QR-code digital menus for cafés and restaurants.** Shop owners build their menu in a dashboard, print a QR table card, and customers scan it to see the live menu in their browser. No app to install, no sign-up.
+**QR-code digital menus for cafés and restaurants.** Owners build their menu in a dashboard and print a QR table card; customers scan it and the menu opens in their phone's browser, in their own language. No app, no sign-up.
 
-The name comes from the Turkish word *okut*: "scan it". The whole app is available in **English, Turkish and Spanish**, and menus can be translated so tourists can read them too.
+**Live:** [okut.vercel.app](https://okut.vercel.app) · Demo menus: [Istanbul (TRY)](https://okut.vercel.app/menu/okut-cafe-istanbul) · [London (GBP)](https://okut.vercel.app/menu/okut-cafe-london) · [Madrid (EUR)](https://okut.vercel.app/menu/okut-cafe-madrid)
+
+*Okut* is Turkish for "scan it". The app is available in English, Turkish and Spanish.
+
+| | |
+|---|---|
+| **Stack** | Next.js 16 (App Router, Server Actions, Cache Components) · React 19 · TypeScript · Supabase (Auth, Postgres, Storage) · Drizzle ORM · Zod · Tailwind CSS 4 · shadcn/ui |
+| **Hosting** | Vercel (app) · Supabase (database, auth, file storage) |
+| **Highlights** | Multi-tenant authorization in code with RLS as a backstop · per-language static prerendering with typed dictionaries · tag-based cache invalidation · client-side image compression · locale-aware currency formatting |
+
+---
+
+## Try it
+
+1. Open [okut.vercel.app](https://okut.vercel.app). You land on `/en`, `/tr` or `/es` depending on your browser language; switch with the flag menu in the header.
+2. Scan the QR code in the "Live demo" section with your phone (or click "Open the menu on this device"). Each language shows a café typical of its country: a Turkish café in lira, a London café in pounds, a Madrid café in euros.
+3. Tap a menu item to open its detail sheet.
+4. Click **Get started free** to create your own shop and try the dashboard: add categories, products and photos, mark items sold out, download your QR code or print a table card.
 
 ## Features
 
 **For shop owners**
-- **Menu management:** create categories and products with prices, descriptions and photos; edit or delete them inline.
-- **Sold-out toggle:** mark an item as unavailable in one click (optimistic UI). It stays on the menu, greyed out with a "Sold out" badge.
-- **Menu translations:** categories and products can store translations. Visitors reading another language get their translation, then English, then the original.
-- **Shop settings:** rename the shop (the menu URL stays the same, so printed QR codes keep working), upload a logo and pick a header color with a live preview.
-- **Currencies:** a shop's currency comes from the language it signs up in: Turkish → TRY, Spanish → EUR, English → GBP. Prices are formatted the way each visitor's language writes them ("£3.50", "3,50 €").
-- **Photo uploads:** images are resized and converted to WebP in the browser before upload, so uploads stay small (~100–400 KB) even from a phone camera.
-- **QR codes:** download the menu's QR code as PNG or SVG, or print a ready-made table card.
-- **Overview dashboard:** menu stats, recently edited products, and a "menu health" check that flags products missing photos or descriptions.
+- **Menu editor:** categories and products with prices, descriptions and photos, edited inline.
+- **Sold-out toggle** with optimistic UI: the item stays on the menu, greyed out with a "Sold out" badge.
+- **Photo uploads:** resized and re-encoded to WebP in the browser before upload, so a 5 MB phone photo becomes ~100–400 KB.
+- **QR codes:** download as PNG or SVG, or print a ready-made table card.
+- **Overview:** menu stats, recently edited items and a "menu health" check for missing photos or descriptions.
+- **Settings:** rename the shop (the menu URL never changes, so printed QR codes keep working), upload a logo, pick one of six header colors with a live preview.
 
 **For customers**
-- A fast, mobile-first public menu at `/menu/<shop-slug>`, with sticky category navigation.
-- Tapping an item opens a bottom sheet with a large photo and the full description.
-- Opens in the phone's language (English, Turkish or Spanish), with a language menu to switch.
-- Served from cache and refreshed as soon as the owner changes something.
+- Mobile-first menu with sticky category navigation and a bottom-sheet detail view for each item.
+- Opens in the phone's language; prices follow that language's conventions (`£3.50`, `3,50 €`, `₺650`).
+- Served from cache, refreshed the moment the owner saves a change.
 
-**Live demo:** [okut.vercel.app](https://okut.vercel.app). Scan the QR code on the landing page to open **Okut Cafe**, a read-only demo whose menu depends on the page language: a Turkish café in TRY ([/menu/okut-cafe-istanbul](https://okut.vercel.app/menu/okut-cafe-istanbul)), a London café in GBP ([/menu/okut-cafe-london](https://okut.vercel.app/menu/okut-cafe-london)) or a Madrid café in EUR ([/menu/okut-cafe-madrid](https://okut.vercel.app/menu/okut-cafe-madrid)). All three are created by `pnpm db:seed` from `scripts/demo-menus/`.
+## Architecture
 
-## Tech stack
+```mermaid
+flowchart LR
+    phone["Customer's phone<br/>scans /menu/okut-cafe-london"] --> proxy
+    owner["Shop owner<br/>/en/dashboard"] --> proxy
 
-| Area | Technology |
-|---|---|
-| Framework | [Next.js 16](https://nextjs.org) (App Router, Server Components, Server Actions, Cache Components), React 19, TypeScript |
-| Backend | [Supabase](https://supabase.com): Auth, PostgreSQL, Storage |
-| Database access | [Drizzle ORM](https://orm.drizzle.team) with SQL migrations |
-| Validation | [Zod](https://zod.dev) |
-| UI | [Tailwind CSS 4](https://tailwindcss.com), [shadcn/ui](https://ui.shadcn.com) on [Base UI](https://base-ui.com), [Lucide](https://lucide.dev) icons |
-| QR codes | [qrcode](https://github.com/soldair/node-qrcode) |
+    subgraph vercel["Vercel · Next.js 16"]
+        proxy["proxy.ts<br/>• language redirect<br/>• Supabase session refresh<br/>• dashboard guard"]
+        menu["/[lang]/menu/[slug]<br/>Server Component<br/>'use cache' + cacheTag"]
+        dash["/[lang]/dashboard<br/>Server Components"]
+        actions["Server Actions<br/>Zod validation +<br/>ownership checks"]
+    end
 
-## Architecture & security
+    subgraph supabase["Supabase"]
+        auth["Auth"]
+        db[("Postgres<br/>RLS on, no policies")]
+        storage["Storage<br/>menu-images bucket"]
+    end
 
-- **Server-only data access.** Every query runs on the server through Drizzle. Row Level Security is enabled on every table with no policies, so the public Supabase Data API (anon/publishable key) cannot read or write any table.
-- **Authorization in code.** Each Server Action resolves the signed-in user's shop and scopes every read and write to it (`requireUserId` → `getOwnedShop` → `shop_id` filters). A user can never touch another shop's data.
-- **Input validation.** All form input is validated with Zod on the server, including Turkish-formatted prices (`1.250,50` → `1250.50`).
-- **Secure uploads.** Photos are uploaded server-side with the Supabase secret key, only after the ownership check, with type (WebP/JPEG/PNG) and size (2 MB) limits enforced both in the app and on the storage bucket. Replaced or deleted photos are removed from storage.
-- **Caching.** Public menus use Next.js `"use cache"` with per-shop cache tags; owner edits call `updateTag()`, so customers see changes immediately while unchanged menus are served from cache.
-- **Internationalization.** Every page lives under `app/[lang]` (`/en`, `/tr`, `/es`) and is prerendered per language. `src/proxy.ts` sends unprefixed URLs, including printed QR codes, to the visitor's language (saved choice, then `Accept-Language`). Server Components read the language with `next/root-params`; Server Actions use a cookie the proxy keeps in sync. Dictionaries are typed against the English source, so a missing key in any language is a compile error.
-- **Session handling.** The proxy also refreshes the Supabase session on each request and protects `/[lang]/dashboard`. Public menu routes skip it entirely.
-- **Read-only demos.** The demo shops have no owner (`owner_id` is `NULL`). No account can resolve them as "their" shop, so they cannot be edited through the app.
+    proxy --> menu
+    proxy --> dash
+    dash --> actions
+    menu -- Drizzle --> db
+    dash -- Drizzle --> db
+    actions -- Drizzle --> db
+    actions -- "secret key, after ownership check" --> storage
+    actions -- "updateTag(menu:shopId)" --> menu
+    proxy --> auth
+```
+
+### Data model
+
+```mermaid
+erDiagram
+    AUTH_USERS ||--o| SHOPS : owns
+    SHOPS ||--o{ CATEGORIES : has
+    CATEGORIES ||--o{ PRODUCTS : has
+
+    SHOPS {
+        uuid id PK
+        uuid owner_id FK "nullable: demo shops have no owner"
+        text slug UK "public URL, never changes"
+        text name
+        text logo_url
+        text theme "header color preset"
+        text currency "TRY, EUR, GBP or USD"
+        text menu_language "en, tr or es"
+    }
+    CATEGORIES {
+        uuid id PK
+        uuid shop_id FK
+        text name
+        jsonb translations
+        int sort_order
+    }
+    PRODUCTS {
+        uuid id PK
+        uuid category_id FK
+        text name
+        text description
+        numeric price "10,2"
+        text image_url
+        bool is_available
+        jsonb translations
+        int sort_order
+    }
+```
+
+Deleting a user cascades to their shop, categories and products.
+
+## Engineering decisions
+
+### Security and multi-tenancy
+- **All data access is server-side.** Pages and Server Actions query Postgres through Drizzle. Row Level Security is enabled on every table with **no policies**, so even with the publishable key from the browser, the Supabase Data API can't read or write a single row. RLS is the backstop; authorization lives in code.
+- **Every write is scoped to the caller's shop.** Each Server Action resolves the signed-in user's shop (`requireUserId` → `getOwnedShop`) and filters every query by it. Passing another shop's category or product ID simply matches nothing.
+- **Uploads go through the server.** Photos are validated (type and size, also enforced by the bucket), uploaded with the secret key only after the ownership check, and old files are deleted when replaced.
+- **Safe post-login redirects.** The `next` parameter is resolved as a URL and rejected unless it stays on the site, which blocks tricks like `/\evil.com`.
+- **Read-only demos without special cases.** The demo shops have `owner_id = NULL`. Since every dashboard query looks up "the shop owned by this user", no account can ever reach them; no `isDemo` flag needed.
+
+### Internationalization
+- **Language in the URL.** Every page lives under `app/[lang]` and `generateStaticParams` prerenders `/en`, `/tr` and `/es` separately, so pages stay static while being fully translated.
+- **QR codes have no language.** A printed code points to `/menu/<slug>`; `proxy.ts` redirects it to the visitor's saved choice or their `Accept-Language`. One QR serves every tourist.
+- **Typed dictionaries.** Turkish and Spanish are typed against the English source, so a missing or misspelled key fails the build.
+- **Right API for each context.** Server Components read the language with `next/root-params`. Server Actions can't, so the proxy keeps a locale cookie in sync with the URL for them.
+- **Locale-aware money.** Prices are stored as `numeric(10,2)` and formatted with `Intl.NumberFormat` in the visitor's language and the shop's currency. Owners type prices the way they write them (`1.250,50` in Turkish and Spanish, `1,250.50` in English).
+
+### Performance
+- **Cached menus with precise invalidation.** `getPublicMenu` uses `"use cache"` and tags each entry with `menu:<shopId>`. Owner edits call `updateTag()`, so only that shop's menu is regenerated. Unknown slugs are cached for minutes instead of forever, so a newly created shop never gets stuck on a cached 404.
+- **Static where possible.** The landing page, including its QR code, is prerendered per language; the public menu uses Partial Prerendering.
+- **Small images.** Photos are compressed in the browser before upload and served through `next/image`.
 
 ## Project structure
 
 ```
 src/
 ├── app/
-│   ├── [lang]/                 # Every page, per language (en, tr, es)
+│   ├── [lang]/                 # Every page, prerendered per language (en, tr, es)
 │   │   ├── page.tsx            # Landing page
 │   │   ├── dashboard/          # Owner dashboard: overview, menu editor, QR codes, settings
 │   │   └── menu/[slug]/        # Public, cached customer menu
 │   └── auth/                   # Sign-in / sign-up Server Actions, email confirmation
-├── components/                 # Auth dialog, language switch and shadcn/ui primitives
-├── db/                         # Drizzle schema and client
+├── components/                 # Auth dialog, language menu, landing sections, shadcn/ui
+├── db/schema.ts                # Drizzle schema (single source of truth for migrations)
 ├── i18n/                       # Locales, typed dictionaries, server/client helpers
-└── lib/                        # Auth, storage, caching, QR and formatting helpers
-drizzle/                        # SQL migrations
-scripts/                        # Demo menu seed script and photos
+├── lib/                        # Auth, storage, menu caching, currency, QR, formatting
+└── proxy.ts                    # Language redirects, session refresh, dashboard guard
+drizzle/                        # Generated SQL migrations
+scripts/
+├── seed-demo-menu.mts          # Creates the three read-only demo cafés
+├── demo-menus/                 # Menu data per country
+└── demo-images/                # Demo photos (see CREDITS.md)
 ```
 
-## Getting started
+## Running locally
 
-**Requirements:** Node.js 20+, pnpm, and a free [Supabase](https://supabase.com) project.
+**Requirements:** Node.js 20+, pnpm and a free [Supabase](https://supabase.com) project.
 
-1. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
-2. **Configure environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
-   Fill in the values from your Supabase dashboard (**Connect** and **Project Settings → API Keys**). `SUPABASE_SECRET_KEY` is used on the server only and must never be exposed to the browser.
-3. **Run the database migrations.** This creates the tables and the `menu-images` storage bucket.
-   ```bash
-   pnpm db:migrate
-   ```
-4. **(Optional) Seed the demo menu**
-   ```bash
-   pnpm db:seed
-   ```
-5. **Start the development server**
-   ```bash
-   pnpm dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000).
+```bash
+pnpm install
+cp .env.example .env.local   # fill in from Supabase: Connect, Project Settings → API Keys
+pnpm db:migrate              # tables and the menu-images storage bucket
+pnpm db:seed                 # optional: the three demo cafés
+pnpm dev                     # http://localhost:3000
+```
 
-## Scripts
+`SUPABASE_SECRET_KEY` is used on the server only and must never be exposed to the browser.
 
 | Command | Description |
 |---|---|
-| `pnpm dev` | Start the development server |
-| `pnpm build` / `pnpm start` | Build and run the production app |
-| `pnpm lint` | Run ESLint |
-| `pnpm typecheck` | Generate route types and run the TypeScript compiler |
+| `pnpm dev` | Development server |
+| `pnpm build` / `pnpm start` | Production build and server |
+| `pnpm lint` / `pnpm typecheck` | ESLint / route types + TypeScript |
 | `pnpm db:generate` | Generate a migration from schema changes |
-| `pnpm db:migrate` | Apply migrations to the database |
-| `pnpm db:studio` | Open Drizzle Studio |
-| `pnpm db:seed` | Create or refresh the three read-only demo menus |
+| `pnpm db:migrate` | Apply migrations |
+| `pnpm db:studio` | Drizzle Studio |
+| `pnpm db:seed` | Create or refresh the demo cafés |
+
+## Known limitations and next steps
+
+- **Automated tests.** There are none yet; end-to-end tests (Playwright) for sign-up, menu editing and the public menu are the first thing I'd add, followed by CI on pull requests.
+- **Abuse limits.** Sign-up is open and there are no per-shop limits on categories, products or uploads yet. Uploads are checked by declared MIME type; verifying file signatures is planned.
+- **Free-tier pausing.** Supabase pauses free projects after a week without database activity; a daily keep-alive cron is planned.
+- **Email confirmation** is currently off; turning it on needs a custom SMTP provider.
+- **Reordering** categories and products, and editing menu translations from the dashboard, are not available yet.
 
 ## Credits
 
-Demo menu photos are from [Unsplash](https://unsplash.com), used under the [Unsplash License](https://unsplash.com/license). Photographers are credited in [`scripts/demo-images/CREDITS.md`](scripts/demo-images/CREDITS.md).
+Demo photos are from [Unsplash](https://unsplash.com), used under the [Unsplash License](https://unsplash.com/license); photographers are credited in [`scripts/demo-images/CREDITS.md`](scripts/demo-images/CREDITS.md).
