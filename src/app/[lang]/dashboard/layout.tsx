@@ -1,4 +1,4 @@
-import { ExternalLinkIcon, LogOutIcon, StoreIcon } from "lucide-react";
+import { LogOutIcon, StoreIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -51,11 +51,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/[lang]
 }
 
 async function ShopSummary() {
-  const [shop, locale, dict] = await Promise.all([
-    requireUserId().then(getOwnedShop),
-    getLocale(),
-    getDictionary(),
-  ]);
+  const shop = await getOwnedShop(await requireUserId());
   if (!shop) return null;
 
   return (
@@ -73,17 +69,7 @@ async function ShopSummary() {
           <StoreIcon className="size-4" />
         </span>
       )}
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{shop.name}</p>
-        <Link
-          href={`/${locale}/menu/${shop.slug}`}
-          target="_blank"
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:underline"
-        >
-          {dict.common.viewMenu}
-          <ExternalLinkIcon className="size-3" />
-        </Link>
-      </div>
+      <p className="min-w-0 flex-1 truncate text-sm font-medium">{shop.name}</p>
     </div>
   );
 }

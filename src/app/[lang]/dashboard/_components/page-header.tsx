@@ -20,7 +20,7 @@ export function PageHeader({
 
 /** Content column shared by dashboard pages. */
 export function PageBody({ children }: { children: React.ReactNode }) {
-  return <main className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-8">{children}</main>;
+  return <main className="flex w-full flex-col gap-6 p-4 md:p-8">{children}</main>;
 }
 
 export function PageSkeleton() {
