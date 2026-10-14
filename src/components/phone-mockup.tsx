@@ -78,7 +78,7 @@ export async function PhoneMockup() {
       <span className="absolute top-40 -left-[3px] h-14 w-[3px] rounded-l bg-[#3a241b]" />
       <span className="absolute top-36 -right-[3px] h-20 w-[3px] rounded-r bg-[#3a241b]" />
 
-      <div className="rounded-[3.25rem] bg-[#24150f] p-3 shadow-2xl shadow-[#2a1610]/25 ring-1 ring-[#3a241b]">
+      <div className="rounded-[3.25rem] bg-[#24150f] p-3 shadow-2xl shadow-[#2a1610]/25 ring-1 ring-[#3a241b] dark:ring-[#5a3a2c]">
         <div className="relative flex h-[38rem] flex-col overflow-hidden rounded-[2.5rem] bg-background">
           {/* Status bar and dynamic island */}
           <div className={`relative flex items-center justify-between px-7 pt-3.5 pb-1 text-[11px] font-semibold bg-brand-tint`}>

@@ -4,7 +4,7 @@
 
 **Live:** [okut.vercel.app](https://okut.vercel.app) · Demo menus: [Istanbul (TRY)](https://okut.vercel.app/menu/okut-cafe-istanbul) · [London (GBP)](https://okut.vercel.app/menu/okut-cafe-london) · [Madrid (EUR)](https://okut.vercel.app/menu/okut-cafe-madrid)
 
-*Okut* is Turkish for "scan it". The app is available in English, Turkish and Spanish. The logo's "o" is a QR code's finder pattern, and the brand colour is *tavşan kanı*, the deep red of well-brewed Turkish tea.
+*Okut* is Turkish for "scan it". The app is available in English, Turkish and Spanish. The logo's "o" is a QR code's finder pattern, and the brand colour is *tavşan kanı*, the deep red of well-brewed Turkish tea. Light and dark themes follow the device setting; QR codes and the printable table card always stay light so cameras and printers read them.
 
 | | |
 |---|---|

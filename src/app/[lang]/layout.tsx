@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { I18nProvider } from "@/i18n/client";
 import { LOCALES } from "@/i18n/config";
@@ -21,6 +21,14 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Browser chrome (e.g. the mobile address bar) matches the page in both themes.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAF7F5" },
+    { media: "(prefers-color-scheme: dark)", color: "#1A100C" },
+  ],
+};
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
