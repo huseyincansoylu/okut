@@ -13,7 +13,6 @@ const en = {
     delete: "Delete",
     deleting: "Deleting...",
     close: "Close",
-    loading: "Loading...",
     optional: "(optional)",
     soldOut: "Sold out",
     viewMenu: "View menu",
@@ -144,7 +143,6 @@ const en = {
       print: "Print table card",
       cardPreview: "Table card preview",
       cardCta: "Scan the QR code for the menu",
-      printPageTitle: "Table card",
     },
     settings: {
       title: "Settings",

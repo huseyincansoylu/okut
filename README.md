@@ -19,17 +19,17 @@
 1. Open [okut.vercel.app](https://okut.vercel.app). You land on `/en`, `/tr` or `/es` depending on your browser language; switch with the flag menu in the header.
 2. Scan the QR code in the "Live demo" section with your phone (or click "Open the menu on this device"). Each language shows a café typical of its country: a Turkish café in lira, a London café in pounds, a Madrid café in euros.
 3. Tap a menu item to open its detail sheet.
-4. Click **Get started free** to create your own shop and try the dashboard: add categories, products and photos, mark items sold out, download your QR code or print a table card.
+4. Click **Create your shop** to try the dashboard: add categories, products and photos, mark items sold out, download your QR code or print a table card.
 
 ## Features
 
 **For shop owners**
 - **Menu editor:** categories and products with prices, descriptions and photos, edited inline.
 - **Sold-out toggle** with optimistic UI: the item stays on the menu, greyed out with a "Sold out" badge.
-- **Photo uploads:** resized and re-encoded to WebP in the browser before upload, so a 5 MB phone photo becomes ~100–400 KB.
+- **Photo uploads:** resized to at most 1200 px and re-encoded to WebP in the browser before upload, so phone photos typically shrink to a few hundred KB.
 - **QR codes:** download as PNG or SVG, or print a ready-made table card.
 - **Overview:** menu stats, recently edited items and a "menu health" check for missing photos or descriptions.
-- **Settings:** rename the shop (the menu URL never changes, so printed QR codes keep working), upload a logo, pick one of six header colors with a live preview, and optionally share the guest Wi-Fi.
+- **Settings:** rename the shop (the menu URL never changes, so printed QR codes keep working), upload a logo (shown on the menu, the sidebar and the table card), pick one of six header colors with a live preview, and optionally share the guest Wi-Fi.
 
 **For customers**
 - Mobile-first menu with sticky category navigation and a bottom-sheet detail view for each item.
@@ -40,7 +40,7 @@
 ## Architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
     phone["Customer's phone<br/>scans /menu/okut-cafe-london"] --> proxy
     owner["Shop owner<br/>/en/dashboard"] --> proxy
 
@@ -65,7 +65,8 @@ flowchart LR
     actions -- Drizzle --> db
     actions -- "secret key, after ownership check" --> storage
     actions -- "updateTag(menu:shopId)" --> menu
-    proxy --> auth
+    actions -- "sign in / sign up" --> auth
+    proxy -- "refresh session" --> auth
 ```
 
 ### Data model
@@ -116,6 +117,7 @@ Deleting a user cascades to their shop, categories and products.
 - **All data access is server-side.** Pages and Server Actions query Postgres through Drizzle. Row Level Security is enabled on every table with **no policies**, so even with the publishable key from the browser, the Supabase Data API can't read or write a single row. RLS is the backstop; authorization lives in code.
 - **Every write is scoped to the caller's shop.** Each Server Action resolves the signed-in user's shop (`requireUserId` → `getOwnedShop`) and filters every query by it. Passing another shop's category or product ID simply matches nothing.
 - **Uploads go through the server.** Photos are validated (type and size, also enforced by the bucket), uploaded with the secret key only after the ownership check, and old files are deleted when replaced.
+- **CSRF protection.** Mutations are Server Actions, which Next.js only accepts from the app's own origin.
 - **Safe post-login redirects.** The `next` parameter is resolved as a URL and rejected unless it stays on the site, which blocks tricks like `/\evil.com`.
 - **Read-only demos without special cases.** The demo shops have `owner_id = NULL`. Since every dashboard query looks up "the shop owned by this user", no account can ever reach them; no `isDemo` flag needed.
 
@@ -124,7 +126,8 @@ Deleting a user cascades to their shop, categories and products.
 - **QR codes have no language.** A printed code points to `/menu/<slug>`; `proxy.ts` redirects it to the visitor's saved choice or their `Accept-Language`. One QR serves every tourist.
 - **Typed dictionaries.** Turkish and Spanish are typed against the English source, so a missing or misspelled key fails the build.
 - **Right API for each context.** Server Components read the language with `next/root-params`. Server Actions can't, so the proxy keeps a locale cookie in sync with the URL for them.
-- **Locale-aware money.** Prices are stored as `numeric(10,2)` and formatted with `Intl.NumberFormat` in the visitor's language and the shop's currency. Owners type prices the way they write them (`1.250,50` in Turkish and Spanish, `1,250.50` in English).
+- **Translatable content.** Categories and products have a `translations` JSON column. A visitor reading a language other than the shop's sees their translation, then English, then the original text.
+- **Locale-aware money.** Prices are stored as `numeric(10,2)` and formatted with `Intl.NumberFormat` in the visitor's language and the shop's currency. Owners type prices the way they write them (`1.250,50` in Turkish and Spanish, `1,250.50` in English). A shop's currency comes from its sign-up language: TRY, EUR or GBP.
 
 ### Performance
 - **Cached menus with precise invalidation.** `getPublicMenu` uses `"use cache"` and tags each entry with `menu:<shopId>`. Owner edits call `updateTag()`, so only that shop's menu is regenerated. Unknown slugs are cached for minutes instead of forever, so a newly created shop never gets stuck on a cached 404.
@@ -177,13 +180,17 @@ pnpm dev                     # http://localhost:3000
 | `pnpm db:studio` | Drizzle Studio |
 | `pnpm db:seed` | Create or refresh the demo cafés |
 
+## Deploying
+
+The live app runs on Vercel. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` and `DATABASE_URL` (the transaction pooler, port 6543) for every environment; `DIRECT_URL` is only needed for migrations and seeding. In Supabase, set **Authentication → URL Configuration** so the Site URL is the deployed domain and `/auth/confirm` is an allowed redirect. Vercel's `VERCEL_PROJECT_PRODUCTION_URL` is used to prerender the landing page QR code with the right domain.
+
 ## Known limitations and next steps
 
 - **Automated tests.** There are none yet; end-to-end tests (Playwright) for sign-up, menu editing and the public menu are the first thing I'd add, followed by CI on pull requests.
 - **Abuse limits.** Sign-up is open and there are no per-shop limits on categories, products or uploads yet. Uploads are checked by declared MIME type; verifying file signatures is planned.
 - **Free-tier pausing.** Supabase pauses free projects after a week without database activity; a daily keep-alive cron is planned.
 - **Email confirmation** is currently off; turning it on needs a custom SMTP provider.
-- **Reordering** categories and products, and editing menu translations from the dashboard, are not available yet.
+- **Not in the dashboard yet:** reordering categories and products, editing translations, changing the currency, and deleting a shop or account.
 
 ## Credits
 

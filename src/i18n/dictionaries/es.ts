@@ -13,7 +13,6 @@ const es: Dictionary = {
     delete: "Eliminar",
     deleting: "Eliminando...",
     close: "Cerrar",
-    loading: "Cargando...",
     optional: "(opcional)",
     soldOut: "Agotado",
     viewMenu: "Ver menú",
@@ -148,7 +147,6 @@ const es: Dictionary = {
       print: "Imprimir tarjeta de mesa",
       cardPreview: "Vista previa de la tarjeta",
       cardCta: "Escanea el código QR para ver el menú",
-      printPageTitle: "Tarjeta de mesa",
     },
     settings: {
       title: "Ajustes",

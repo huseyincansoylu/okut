@@ -13,7 +13,6 @@ const tr: Dictionary = {
     delete: "Sil",
     deleting: "Siliniyor...",
     close: "Kapat",
-    loading: "Yükleniyor...",
     optional: "(isteğe bağlı)",
     soldOut: "Tükendi",
     viewMenu: "Menüyü görüntüle",
@@ -144,7 +143,6 @@ const tr: Dictionary = {
       print: "Masa kartını yazdır",
       cardPreview: "Masa kartı önizlemesi",
       cardCta: "Menü için QR kodu okutun",
-      printPageTitle: "Masa kartı",
     },
     settings: {
       title: "Ayarlar",

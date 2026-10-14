@@ -37,7 +37,7 @@ export function ProductDialog(props: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={props.trigger} />
-      <DialogContent className="max-h-[90dvh] overflow-y-auto">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto" closeLabel={dict.common.close}>
         <DialogHeader>
           <DialogTitle>{props.mode === "create" ? dict.dashboard.menu.addProduct : dict.dashboard.menu.editProduct}</DialogTitle>
         </DialogHeader>

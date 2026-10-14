@@ -36,7 +36,7 @@ export function AuthDialog() {
   return (
     <>
       <Dialog open={auth === "login"} onOpenChange={onOpenChange}>
-        <DialogContent>
+        <DialogContent closeLabel={dict.common.close}>
           <DialogHeader>
             <DialogTitle>{t.signInTitle}</DialogTitle>
             <DialogDescription>{t.signInDescription}</DialogDescription>
@@ -52,7 +52,7 @@ export function AuthDialog() {
       </Dialog>
 
       <Dialog open={auth === "signup"} onOpenChange={onOpenChange}>
-        <DialogContent>
+        <DialogContent closeLabel={dict.common.close}>
           <DialogHeader>
             <DialogTitle>{t.signUpTitle}</DialogTitle>
             <DialogDescription>{t.signUpDescription}</DialogDescription>
