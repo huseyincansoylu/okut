@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { fill } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { getPublicMenu, localizeMenu, type PublicMenu } from "@/lib/menu";
@@ -34,9 +35,12 @@ async function Menu({ params }: Pick<PageProps<"/[lang]/menu/[slug]">, "params">
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <header className={`relative px-4 pt-14 pb-12 text-center ${menuTheme(menu.shop.theme).header}`}>
-        <Suspense>
-          <LocaleSwitcher className="absolute top-3 right-3 bg-background/70 text-foreground backdrop-blur" />
-        </Suspense>
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          <Suspense>
+            <LocaleSwitcher className="bg-background/70 text-foreground backdrop-blur" />
+          </Suspense>
+          <ThemeSwitcher className="size-9 bg-background/70 text-foreground backdrop-blur" />
+        </div>
         {menu.shop.logoUrl && (
           <Image
             src={menu.shop.logoUrl}

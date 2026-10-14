@@ -23,6 +23,10 @@ const es: Dictionary = {
     getStarted: "Empieza gratis",
     createShop: "Crea tu local",
     language: "Idioma",
+    theme: "Tema",
+    themeLight: "Claro",
+    themeDark: "Oscuro",
+    themeSystem: "Sistema",
   },
   landing: {
     heroTitle: "Tu menú,\nen el bolsillo de tus clientes.",

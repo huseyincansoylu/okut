@@ -23,6 +23,10 @@ const en = {
     getStarted: "Get started free",
     createShop: "Create your shop",
     language: "Language",
+    theme: "Theme",
+    themeLight: "Light",
+    themeDark: "Dark",
+    themeSystem: "System",
   },
   landing: {
     heroTitle: "Your menu,\nin your customers' pockets.",

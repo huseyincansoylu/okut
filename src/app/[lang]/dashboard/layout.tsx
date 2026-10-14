@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { signOut } from "@/app/auth/actions";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Logo } from "@/components/logo";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { requireUserId } from "@/lib/auth";
@@ -25,6 +26,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/[lang]
             <Suspense>
               <LocaleSwitcher />
             </Suspense>
+            <ThemeSwitcher />
             <SignOutButton label={dict.common.signOut} />
           </div>
         </div>
@@ -39,9 +41,12 @@ export default async function DashboardLayout({ children }: LayoutProps<"/[lang]
 
         <div className="mt-auto hidden items-center justify-between gap-2 border-t p-3 md:flex">
           <SignOutButton label={dict.common.signOut} />
-          <Suspense>
-            <LocaleSwitcher />
-          </Suspense>
+          <div className="flex items-center gap-1">
+            <Suspense>
+              <LocaleSwitcher />
+            </Suspense>
+            <ThemeSwitcher />
+          </div>
         </div>
       </aside>
 

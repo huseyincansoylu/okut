@@ -23,6 +23,10 @@ const tr: Dictionary = {
     getStarted: "Ücretsiz başla",
     createShop: "Dükkanını oluştur",
     language: "Dil",
+    theme: "Tema",
+    themeLight: "Açık",
+    themeDark: "Koyu",
+    themeSystem: "Sistem",
   },
   landing: {
     heroTitle: "Dükkanının menüsü,\nmüşterinin cebinde.",

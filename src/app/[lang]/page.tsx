@@ -4,6 +4,7 @@ import { AuthDialog } from "@/components/auth/auth-dialog";
 import { DemoQr } from "@/components/demo-qr";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Logo } from "@/components/logo";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { PhoneMockup } from "@/components/phone-mockup";
 import { SiteFooter } from "@/components/site-footer";
 import { buttonVariants } from "@/components/ui/button";
@@ -24,6 +25,7 @@ export default async function Home() {
             <Suspense>
               <LocaleSwitcher />
             </Suspense>
+            <ThemeSwitcher />
             <Link href="?auth=login" scroll={false} className={buttonVariants({ variant: "ghost" })}>
               {dict.common.signIn}
             </Link>

@@ -4,6 +4,7 @@ import { I18nProvider } from "@/i18n/client";
 import { LOCALES } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
 import { siteOrigin } from "@/lib/site-url";
+import { THEME_SCRIPT } from "@/lib/theme";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -49,7 +50,15 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
 
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}>
+    // The theme script adds .dark before React hydrates, hence suppressHydrationWarning.
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <I18nProvider locale={locale} dict={dict}>
           {children}
