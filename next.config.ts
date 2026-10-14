@@ -12,6 +12,13 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "3mb",
     },
   },
+  // The Turkish demo moved to /menu/okut-cafe-istanbul; keep links shared before that working.
+  async redirects() {
+    return [
+      { source: "/menu/okut-cafe", destination: "/menu/okut-cafe-istanbul", permanent: false },
+      { source: "/:lang/menu/okut-cafe", destination: "/:lang/menu/okut-cafe-istanbul", permanent: false },
+    ];
+  },
   images: {
     remotePatterns: supabaseUrl ? [new URL(`${supabaseUrl}/storage/v1/object/public/menu-images/**`)] : [],
   },

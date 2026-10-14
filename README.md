@@ -22,7 +22,7 @@ The name comes from the Turkish word *okut*: "scan it". The whole app is availab
 - Opens in the phone's language (English, Turkish or Spanish), with a language menu to switch.
 - Served from cache and refreshed as soon as the owner changes something.
 
-**Live demo:** [okut.vercel.app](https://okut.vercel.app). Scan the QR code on the landing page to open **Okut Cafe**, a read-only demo whose menu depends on the page language: a Turkish café in TRY ([/menu/okut-cafe](https://okut.vercel.app/menu/okut-cafe)), a London café in GBP ([/menu/okut-cafe-london](https://okut.vercel.app/menu/okut-cafe-london)) or a Madrid café in EUR ([/menu/okut-cafe-madrid](https://okut.vercel.app/menu/okut-cafe-madrid)). All three are created by `pnpm db:seed` from `scripts/demo-menus/`.
+**Live demo:** [okut.vercel.app](https://okut.vercel.app). Scan the QR code on the landing page to open **Okut Cafe**, a read-only demo whose menu depends on the page language: a Turkish café in TRY ([/menu/okut-cafe-istanbul](https://okut.vercel.app/menu/okut-cafe-istanbul)), a London café in GBP ([/menu/okut-cafe-london](https://okut.vercel.app/menu/okut-cafe-london)) or a Madrid café in EUR ([/menu/okut-cafe-madrid](https://okut.vercel.app/menu/okut-cafe-madrid)). All three are created by `pnpm db:seed` from `scripts/demo-menus/`.
 
 ## Tech stack
 

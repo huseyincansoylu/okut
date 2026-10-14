@@ -1,6 +1,6 @@
 /**
  * Creates (or refreshes) the read-only demo menus, one per language (see
- * src/lib/demo.ts): /menu/okut-cafe (Turkish), /menu/okut-cafe-london (English)
+ * src/lib/demo.ts): /menu/okut-cafe-istanbul (Turkish), /menu/okut-cafe-london (English)
  * and /menu/okut-cafe-madrid (Spanish).
  *
  *   pnpm db:seed
