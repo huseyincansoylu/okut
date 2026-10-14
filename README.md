@@ -9,9 +9,9 @@ The name comes from the Turkish word *okut*: "scan it". The whole app is availab
 **For shop owners**
 - **Menu management:** create categories and products with prices, descriptions and photos; edit or delete them inline.
 - **Sold-out toggle:** mark an item as unavailable in one click (optimistic UI). It stays on the menu, greyed out with a "Sold out" badge.
-- **Menu translations:** add optional English names and descriptions to categories and products. Spanish visitors see the English text; untranslated items fall back to the original.
+- **Menu translations:** categories and products can store translations (the Okut Cafe demo ships with English text). Visitors reading another language get their translation, then English, then the original.
 - **Shop settings:** rename the shop (the menu URL stays the same, so printed QR codes keep working), upload a logo and pick a header color with a live preview.
-- **Currencies and menu language:** price the menu in TRY, EUR, GBP or USD, formatted the way each visitor's language writes prices ("€3.50", "3,50 €"). Shops write their menu in Turkish, English or Spanish; visitors reading another language get their translation, then English, then the original. Turkish and Spanish sign-ups default to TRY / EUR; English sign-ups choose.
+- **Currencies:** a shop's currency comes from the language it signs up in: Turkish → TRY, Spanish → EUR, English → GBP. Prices are formatted the way each visitor's language writes them ("£3.50", "3,50 €").
 - **Photo uploads:** images are resized and converted to WebP in the browser before upload, so uploads stay small (~100–400 KB) even from a phone camera.
 - **QR codes:** download the menu's QR code as PNG or SVG, or print a ready-made table card.
 - **Overview dashboard:** menu stats, recently edited products, and a "menu health" check that flags products missing photos or descriptions.

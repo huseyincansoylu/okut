@@ -21,7 +21,7 @@ export async function MenuEditor() {
   if (!shop) return <NoShop />;
   const t = dict.dashboard.menu;
   // Only what the client forms need, not the whole shop row.
-  const settings = { currency: shop.currency, menuLanguage: shop.menuLanguage };
+  const settings = { currency: shop.currency };
 
   const categoryRows = await db
     .select()
@@ -52,7 +52,7 @@ export async function MenuEditor() {
         }
       />
 
-      <AddCategoryForm showEnglish={shop.menuLanguage !== "en"} />
+      <AddCategoryForm />
 
       {categoryRows.length === 0 ? (
         <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
@@ -67,8 +67,6 @@ export async function MenuEditor() {
                 <CategoryHeader
                   id={category.id}
                   name={category.name}
-                  nameEn={category.translations.en?.name ?? ""}
-                  showEnglish={shop.menuLanguage !== "en"}
                   productCount={items.length}
                 />
               </CardHeader>

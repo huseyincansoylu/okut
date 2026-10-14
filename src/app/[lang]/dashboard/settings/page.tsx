@@ -26,15 +26,7 @@ async function Settings() {
   return (
     <PageBody>
       <PageHeader title={dict.dashboard.settings.title} description={dict.dashboard.settings.description} />
-      <SettingsForm
-        shop={{
-          name: shop.name,
-          logoUrl: shop.logoUrl,
-          theme: shop.theme,
-          currency: shop.currency,
-          menuLanguage: shop.menuLanguage,
-        }}
-      />
+      <SettingsForm shop={{ name: shop.name, logoUrl: shop.logoUrl, theme: shop.theme }} />
     </PageBody>
   );
 }

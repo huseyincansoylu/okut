@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useI18n } from "@/i18n/client";
 import { createCategory } from "../menu-actions";
 
-export function AddCategoryForm({ showEnglish }: { showEnglish: boolean }) {
+export function AddCategoryForm() {
   const { dict } = useI18n();
   const t = dict.dashboard.menu;
   const [state, action, pending] = useActionState(createCategory, undefined);
@@ -19,11 +19,8 @@ export function AddCategoryForm({ showEnglish }: { showEnglish: boolean }) {
 
   return (
     <form ref={formRef} action={action} className="flex flex-col gap-2">
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="flex gap-2">
         <Input name="name" required maxLength={50} placeholder={t.newCategory} aria-label={t.categoryName} />
-        {showEnglish && (
-          <Input name="nameEn" maxLength={50} placeholder={t.newCategoryEn} aria-label={t.categoryNameEn} className="sm:max-w-56" />
-        )}
         <Button type="submit" disabled={pending}>
           <PlusIcon />
           {t.addCategory}

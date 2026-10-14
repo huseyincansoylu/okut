@@ -4,7 +4,7 @@ import { and, eq, inArray, sql } from "drizzle-orm";
 import { refresh, updateTag } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
-import { categories, products, type Translations } from "@/db/schema";
+import { categories, products } from "@/db/schema";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionary";
 import { getRequestDictionary, getRequestLocale } from "@/i18n/request";
@@ -15,16 +15,6 @@ import { getOwnedShop } from "@/lib/shops";
 import { removeMenuImages, uploadMenuImage, validateImage } from "@/lib/storage";
 
 export type ActionState = { error?: string; ok?: boolean } | undefined;
-
-/** Optional English text; empty fields are dropped so menus fall back to the original. */
-function englishTranslation(name: FormDataEntryValue | null, description?: FormDataEntryValue | null): Translations {
-  const en = {
-    name: typeof name === "string" ? name.trim().slice(0, 80) : "",
-    description: typeof description === "string" ? description.trim().slice(0, 300) : "",
-  };
-  const entries = Object.entries(en).filter(([, value]) => value);
-  return entries.length ? { en: Object.fromEntries(entries) } : {};
-}
 
 function categorySchema(dict: Dictionary) {
   return z.object({
@@ -89,7 +79,6 @@ export async function createCategory(_prev: ActionState, formData: FormData): Pr
   await db.insert(categories).values({
     shopId,
     name: parsed.data.name,
-    translations: englishTranslation(formData.get("nameEn")),
     sortOrder: sql`(select coalesce(max(${categories.sortOrder}), -1) + 1 from ${categories} where ${categories.shopId} = ${shopId})`,
   });
   menuChanged(shopId);
@@ -108,7 +97,7 @@ export async function updateCategory(
 
   const updated = await db
     .update(categories)
-    .set({ name: parsed.data.name, translations: englishTranslation(formData.get("nameEn")) })
+    .set({ name: parsed.data.name })
     .where(and(eq(categories.id, categoryId), eq(categories.shopId, shopId)))
     .returning({ id: categories.id });
   if (updated.length === 0) return { error: dict.errors.categoryNotFound };
@@ -142,8 +131,7 @@ async function readProduct(formData: FormData) {
     price: formData.get("price"),
     isAvailable: formData.get("isAvailable"),
   });
-  const translations = englishTranslation(formData.get("nameEn"), formData.get("descriptionEn"));
-  return { dict, parsed, translations };
+  return { dict, parsed };
 }
 
 /** The uploaded photo (if any) and whether the existing one should be removed. */
@@ -179,7 +167,7 @@ export async function createProduct(
   formData: FormData,
 ): Promise<ActionState> {
   const shopId = await requireShopId();
-  const { dict, parsed, translations } = await readProduct(formData);
+  const { dict, parsed } = await readProduct(formData);
   if (!parsed.success) return firstIssue(parsed.error);
   const image = readImage(formData, dict);
   if (image.error) return { error: image.error };
@@ -199,7 +187,6 @@ export async function createProduct(
   try {
     await db.insert(products).values({
       ...parsed.data,
-      translations,
       imageUrl,
       categoryId,
       sortOrder: sql`(select coalesce(max(${products.sortOrder}), -1) + 1 from ${products} where ${products.categoryId} = ${categoryId})`,
@@ -219,7 +206,7 @@ export async function updateProduct(
   formData: FormData,
 ): Promise<ActionState> {
   const shopId = await requireShopId();
-  const { dict, parsed, translations } = await readProduct(formData);
+  const { dict, parsed } = await readProduct(formData);
   if (!parsed.success) return firstIssue(parsed.error);
   const image = readImage(formData, dict);
   if (image.error) return { error: image.error };
@@ -239,7 +226,7 @@ export async function updateProduct(
   try {
     await db
       .update(products)
-      .set({ ...parsed.data, translations, imageUrl })
+      .set({ ...parsed.data, imageUrl })
       .where(eq(products.id, existing.id));
   } catch (error) {
     if (image.file) await removeMenuImages([imageUrl]);

@@ -23,7 +23,7 @@ import { createProduct, updateProduct, type ActionState } from "../menu-actions"
 import { ImageField } from "./image-field";
 
 /** The shop settings product forms depend on. */
-export type MenuSettings = { currency: string; menuLanguage: string };
+export type MenuSettings = { currency: string };
 
 type Props = { trigger: ReactElement; shop: MenuSettings } & (
   | { mode: "create"; categoryId: string; product?: never }
@@ -51,7 +51,6 @@ export function ProductDialog(props: Props) {
 function ProductForm({ mode, categoryId, product, shop, onDone }: Props & { onDone: () => void }) {
   const { locale, dict } = useI18n();
   const t = dict.dashboard.menu;
-  const english = product?.translations.en;
   const [state, action, pending] = useActionState(async (prev: ActionState, formData: FormData) => {
     const result =
       mode === "create"
@@ -100,26 +99,6 @@ function ProductForm({ mode, categoryId, product, shop, onDone }: Props & { onDo
         <input type="hidden" name="isAvailable" value={String(isAvailable)} />
       </div>
 
-      {shop.menuLanguage !== "en" && (
-      <fieldset className="grid gap-3 rounded-lg border p-3">
-        <legend className="px-1 text-sm font-medium">{t.englishSection}</legend>
-        <p className="-mt-1 text-xs text-muted-foreground">{t.englishHint}</p>
-        <div className="grid gap-2">
-          <Label htmlFor="product-name-en">{t.productNameEn}</Label>
-          <Input id="product-name-en" name="nameEn" maxLength={80} defaultValue={english?.name ?? ""} />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="product-description-en">{t.descriptionEn}</Label>
-          <Textarea
-            id="product-description-en"
-            name="descriptionEn"
-            maxLength={300}
-            rows={2}
-            defaultValue={english?.description ?? ""}
-          />
-        </div>
-      </fieldset>
-      )}
 
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
 

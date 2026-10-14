@@ -4,13 +4,10 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useI18n } from "@/i18n/client";
-import { defaultCurrencyFor } from "@/lib/currency";
-import { CurrencySelect } from "@/components/currency-select";
 import { createMyShop } from "./actions";
 
 export function CreateShopForm() {
-  const { locale, dict } = useI18n();
-  const askCurrency = defaultCurrencyFor(locale) === null;
+  const { dict } = useI18n();
   const [state, action, pending] = useActionState(createMyShop, undefined);
 
   return (
@@ -18,7 +15,6 @@ export function CreateShopForm() {
       <p className="text-sm">{dict.dashboard.noShopText}</p>
       <div className="flex gap-2">
         <Input name="shopName" required minLength={2} maxLength={60} placeholder={dict.dashboard.shopNamePlaceholder} aria-label={dict.auth.shopName} />
-        {askCurrency && <CurrencySelect id="new-shop-currency" defaultValue="GBP" className="w-auto" />}
         <Button type="submit" disabled={pending}>
           {dict.dashboard.create}
         </Button>

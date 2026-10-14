@@ -12,14 +12,10 @@ import { ConfirmDelete } from "./confirm-delete";
 export function CategoryHeader({
   id,
   name,
-  nameEn,
-  showEnglish,
   productCount,
 }: {
   id: string;
   name: string;
-  nameEn: string;
-  showEnglish: boolean;
   productCount: number;
 }) {
   const { dict } = useI18n();
@@ -43,9 +39,6 @@ export function CategoryHeader({
             {dict.common.cancel}
           </Button>
         </div>
-        {showEnglish && (
-          <Input name="nameEn" defaultValue={nameEn} maxLength={50} placeholder={t.newCategoryEn} aria-label={t.categoryNameEn} />
-        )}
         {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
       </form>
     );

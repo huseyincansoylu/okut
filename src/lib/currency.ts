@@ -12,16 +12,9 @@ export function currencySymbol(code: string) {
   return isCurrency(code) ? CURRENCY_SYMBOLS[code] : code;
 }
 
-export function isCurrency(value: unknown): value is Currency {
+function isCurrency(value: unknown): value is Currency {
   return CURRENCIES.includes(value as Currency);
 }
 
-/**
- * A new shop's currency, guessed from the language it signs up in. English is
- * spoken in GBP, USD and EUR countries alike, so sign-up asks instead.
- */
-export function defaultCurrencyFor(locale: Locale): Currency | null {
-  if (locale === "tr") return "TRY";
-  if (locale === "es") return "EUR";
-  return null;
-}
+/** A new shop's currency, set from the language it signs up in. */
+export const SIGN_UP_CURRENCY: Record<Locale, Currency> = { tr: "TRY", es: "EUR", en: "GBP" };

@@ -7,8 +7,7 @@ import { db } from "@/db";
 import { shops } from "@/db/schema";
 import type { Dictionary } from "@/i18n/dictionary";
 import { getRequestDictionary, getRequestLocale } from "@/i18n/request";
-import { hasLocale } from "@/i18n/config";
-import { defaultCurrencyFor, isCurrency } from "@/lib/currency";
+import { SIGN_UP_CURRENCY } from "@/lib/currency";
 import { requireUserId } from "@/lib/auth";
 import { menuTag } from "@/lib/menu";
 import { isMenuTheme } from "@/lib/menu-themes";
@@ -32,9 +31,7 @@ export async function createMyShop(_prev: ShopFormState, formData: FormData): Pr
   if (existing) return { error: dict.errors.alreadyHasShop };
 
   const locale = await getRequestLocale();
-  const chosen = formData.get("currency");
-  const currency = isCurrency(chosen) ? chosen : (defaultCurrencyFor(locale) ?? "USD");
-  await createShop(userId, parsed.data, { currency, menuLanguage: locale });
+  await createShop(userId, parsed.data, { currency: SIGN_UP_CURRENCY[locale], menuLanguage: locale });
   refresh();
 }
 
@@ -42,8 +39,6 @@ function settingsSchema(dict: Dictionary) {
   return z.object({
     name: shopName(dict),
     theme: z.string().refine(isMenuTheme, dict.errors.invalidTheme),
-    currency: z.string().refine(isCurrency, dict.errors.invalidCurrency),
-    menuLanguage: z.string().refine(hasLocale, dict.errors.invalidLanguage),
   });
 }
 
@@ -55,8 +50,6 @@ export async function updateShopSettings(_prev: ShopFormState, formData: FormDat
   const parsed = settingsSchema(dict).safeParse({
     name: formData.get("name"),
     theme: formData.get("theme"),
-    currency: formData.get("currency"),
-    menuLanguage: formData.get("menuLanguage"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
