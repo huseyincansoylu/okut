@@ -3,6 +3,8 @@ import type { Dictionary } from "../dictionary";
 const tr: Dictionary = {
   meta: {
     title: "Okut",
+    tagline: "Menünüz, misafirinizin dilinde.",
+    imageAlt: "Okut: kafe ve restoranlar için QR menü",
     description: "Kafe ve restoranlar için QR menü",
   },
   common: {

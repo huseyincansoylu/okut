@@ -3,6 +3,8 @@ import type { Dictionary } from "../dictionary";
 const es: Dictionary = {
   meta: {
     title: "Okut",
+    tagline: "Tu menú, en el idioma de cada cliente.",
+    imageAlt: "Okut: menús digitales con código QR para cafeterías y restaurantes",
     description: "Menús digitales con código QR para cafeterías y restaurantes",
   },
   common: {

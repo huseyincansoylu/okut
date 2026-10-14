@@ -37,7 +37,13 @@ export default async function Home() {
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-24 px-6 pb-24">
         <section className="grid items-center gap-12 pt-10 md:grid-cols-2">
           <div className="flex flex-col gap-6">
-            <h1 className="text-4xl leading-tight font-bold whitespace-pre-line md:text-5xl">{t.heroTitle}</h1>
+            <h1 className="text-4xl leading-tight font-bold md:text-5xl">
+              {t.heroTitle.split("\n").map((line, i) => (
+                <span key={line} className={i === 1 ? "block text-primary" : "block"}>
+                  {line}
+                </span>
+              ))}
+            </h1>
             <p className="text-lg opacity-70">{t.heroText}</p>
             <div className="flex flex-wrap gap-3">
               <Link href="?auth=signup" scroll={false} className={buttonVariants({ size: "lg" })}>
@@ -71,7 +77,7 @@ export default async function Home() {
           <ol className="grid gap-4 sm:grid-cols-3">
             {t.steps.map((step, i) => (
               <li key={step} className="flex gap-3 rounded-lg border p-5">
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-foreground text-sm text-background">
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm text-primary-foreground">
                   {i + 1}
                 </span>
                 <span className="text-sm">{step}</span>

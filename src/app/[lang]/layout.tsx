@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { I18nProvider } from "@/i18n/client";
 import { LOCALES } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/server";
+import { siteOrigin } from "@/lib/site-url";
 import "../globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin", "latin-ext"],
+});
+
+// Okut wordmark only.
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
+  subsets: ["latin", "latin-ext"],
+  weight: ["800"],
 });
 
 const geistMono = Geist_Mono({
@@ -22,6 +30,8 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   const dict = await getDictionary();
   return {
+    // Absolute URLs for the link-preview image and alternates.
+    metadataBase: new URL(siteOrigin()),
     title: { default: dict.meta.title, template: `%s · ${dict.meta.title}` },
     description: dict.meta.description,
     alternates: { languages: Object.fromEntries(LOCALES.map((l) => [l, `/${l}`])) },
@@ -32,7 +42,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const [locale, dict] = await Promise.all([getLocale(), getDictionary()]);
 
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <I18nProvider locale={locale} dict={dict}>
           {children}

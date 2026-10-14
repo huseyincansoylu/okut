@@ -3,6 +3,8 @@
 const en = {
   meta: {
     title: "Okut",
+    tagline: "Your menu, in every guest's language.",
+    imageAlt: "Okut: QR-code digital menus for cafés and restaurants",
     description: "QR-code digital menus for cafés and restaurants",
   },
   common: {

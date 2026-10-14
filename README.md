@@ -4,7 +4,7 @@
 
 **Live:** [okut.vercel.app](https://okut.vercel.app) · Demo menus: [Istanbul (TRY)](https://okut.vercel.app/menu/okut-cafe-istanbul) · [London (GBP)](https://okut.vercel.app/menu/okut-cafe-london) · [Madrid (EUR)](https://okut.vercel.app/menu/okut-cafe-madrid)
 
-*Okut* is Turkish for "scan it". The app is available in English, Turkish and Spanish.
+*Okut* is Turkish for "scan it". The app is available in English, Turkish and Spanish. The logo's "o" is a QR code's finder pattern, and the brand colour is *tavşan kanı*, the deep red of well-brewed Turkish tea.
 
 | | |
 |---|---|
@@ -194,4 +194,4 @@ The live app runs on Vercel. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABA
 
 ## Credits
 
-Demo photos are from [Unsplash](https://unsplash.com), used under the [Unsplash License](https://unsplash.com/license); photographers are credited in [`scripts/demo-images/CREDITS.md`](scripts/demo-images/CREDITS.md).
+The wordmark and link previews use [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) (SIL Open Font License, see [`assets/fonts/OFL.txt`](assets/fonts/OFL.txt)). Demo photos are from [Unsplash](https://unsplash.com), used under the [Unsplash License](https://unsplash.com/license); photographers are credited in [`scripts/demo-images/CREDITS.md`](scripts/demo-images/CREDITS.md).

@@ -9,6 +9,7 @@ import { getOwnedShop } from "@/lib/shops";
 import { getMenuUrl } from "@/lib/site-url";
 import { NoShop } from "../_components/no-shop";
 import { PageBody, PageHeader, PageSkeleton } from "../_components/page-header";
+import { LogoMark } from "@/components/logo";
 import { QrActions } from "../_components/qr-actions";
 import { PrintButton } from "./print-button";
 
@@ -68,6 +69,10 @@ async function QrContent() {
             <div className="w-full [&_svg]:size-full" dangerouslySetInnerHTML={{ __html: svg }} />
             <p className="text-lg font-medium">{t.cardCta}</p>
             <p className="text-xs break-all text-neutral-500">{url}</p>
+            <span className="inline-flex items-center gap-1 font-brand text-xs font-extrabold text-[#8C2413]">
+              <LogoMark className="size-3" />
+              okut
+            </span>
           </article>
         </section>
       </div>
