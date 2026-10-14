@@ -98,7 +98,7 @@ async function Overview() {
         title={t.title}
         description={shop.name}
         actions={
-          <Link href={`/${locale}/menu/${shop.slug}`} target="_blank" className={buttonVariants({ variant: "outline" })}>
+          <Link href={`/${locale}/menu/${shop.slug}`} target="_blank" className={buttonVariants({ variant: "secondary" })}>
             {dict.common.viewMenu}
             <ExternalLinkIcon />
           </Link>

@@ -33,7 +33,7 @@ export async function DemoQr() {
           <ScanLineIcon className="size-4" />
           {t.demoBadge}
         </p>
-        <h2 className="text-2xl font-semibold">{t.demoTitle}</h2>
+        <h2 className="font-heading text-3xl font-extrabold tracking-tight">{t.demoTitle}</h2>
         <p className="max-w-md opacity-70">{fill(t.demoText, { shop: demo.name })}</p>
         <Link
           href={`/${locale}${path}`}

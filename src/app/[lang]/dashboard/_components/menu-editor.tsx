@@ -45,7 +45,7 @@ export async function MenuEditor() {
         title={t.title}
         description={fill(t.summary, { categories: categoryRows.length, products: productRows.length })}
         actions={
-          <Link href={`/${locale}/menu/${shop.slug}`} target="_blank" className={buttonVariants({ variant: "outline" })}>
+          <Link href={`/${locale}/menu/${shop.slug}`} target="_blank" className={buttonVariants({ variant: "secondary" })}>
             {dict.common.viewMenu}
             <ExternalLinkIcon />
           </Link>

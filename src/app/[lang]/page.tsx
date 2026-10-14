@@ -37,7 +37,7 @@ export default async function Home() {
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-24 px-6 pb-24">
         <section className="grid items-center gap-12 pt-10 md:grid-cols-2">
           <div className="flex flex-col gap-6">
-            <h1 className="text-4xl leading-tight font-bold md:text-5xl">
+            <h1 className="font-heading text-4xl leading-[1.05] font-extrabold tracking-tight md:text-6xl">
               {t.heroTitle.split("\n").map((line, i) => (
                 <span key={line} className={i === 1 ? "block text-primary" : "block"}>
                   {line}
@@ -61,11 +61,11 @@ export default async function Home() {
         <DemoQr />
 
         <section className="flex flex-col gap-8">
-          <h2 className="text-2xl font-semibold">{t.featuresTitle}</h2>
+          <h2 className="font-heading text-3xl font-extrabold tracking-tight">{t.featuresTitle}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {t.features.map((f) => (
               <div key={f.title} className="rounded-lg border p-5">
-                <h3 className="font-medium">{f.title}</h3>
+                <h3 className="font-heading text-lg font-bold">{f.title}</h3>
                 <p className="mt-1 text-sm opacity-70">{f.text}</p>
               </div>
             ))}
@@ -73,7 +73,7 @@ export default async function Home() {
         </section>
 
         <section className="flex flex-col gap-8">
-          <h2 className="text-2xl font-semibold">{t.stepsTitle}</h2>
+          <h2 className="font-heading text-3xl font-extrabold tracking-tight">{t.stepsTitle}</h2>
           <ol className="grid gap-4 sm:grid-cols-3">
             {t.steps.map((step, i) => (
               <li key={step} className="flex gap-3 rounded-lg border p-5">
@@ -87,7 +87,7 @@ export default async function Home() {
         </section>
 
         <section className="flex flex-col items-center gap-4 rounded-2xl border p-10 text-center">
-          <h2 className="text-2xl font-semibold">{t.ctaTitle}</h2>
+          <h2 className="font-heading text-3xl font-extrabold tracking-tight">{t.ctaTitle}</h2>
           <p className="max-w-md opacity-70">{t.ctaText}</p>
           <Link href="?auth=signup" scroll={false} className={buttonVariants({ size: "lg" })}>
             {dict.common.getStarted}

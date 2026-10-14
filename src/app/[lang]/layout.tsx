@@ -11,11 +11,10 @@ const geistSans = Geist({
   subsets: ["latin", "latin-ext"],
 });
 
-// Okut wordmark only.
+// Brand display face: the wordmark and headings.
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin", "latin-ext"],
-  weight: ["800"],
 });
 
 const geistMono = Geist_Mono({
