@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
-import { dict } from "@/lib/dictionary";
+import { dict, INTL_LOCALE } from "@/lib/dictionary";
 import { siteOrigin } from "@/lib/site-url";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // The theme script adds .dark before React hydrates, hence suppressHydrationWarning.
     <html
-      lang="tr"
+      lang={INTL_LOCALE}
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}
     >

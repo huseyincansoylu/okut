@@ -19,7 +19,7 @@ export function slugify(input: string) {
 
 /** Creates a shop with a unique slug derived from its name. */
 export async function createShop(ownerId: string, name: string) {
-  const base = slugify(name) || "dukkan";
+  const base = slugify(name) || "shop";
 
   for (let attempt = 0; attempt < 5; attempt++) {
     const slug = attempt === 0 ? base : `${base}-${Math.random().toString(36).slice(2, 6)}`;

@@ -7,24 +7,24 @@ import { formatPrice } from "@/lib/format";
 // A static preview of the demo café; items and prices match scripts/demo-menu.mts.
 const SECTIONS = [
   {
-    name: "Sıcak İçecekler",
+    name: "Hot Drinks",
     items: [
-      { name: "Türk Kahvesi", description: "Yanında lokum ile", price: 70, image: "/landing/turk-kahvesi.webp" },
-      { name: "Latte", description: "Çift shot espresso ve süt", price: 90, image: "/landing/latte.webp" },
-      { name: "Çay", description: "İnce belli bardakta", price: 20, image: "/landing/cay.webp" },
+      { name: "English Breakfast Tea", description: "Served with milk", price: 2.8, image: "/landing/breakfast-tea.webp" },
+      { name: "Flat White", description: "Double ristretto, steamed milk", price: 3.4, image: "/landing/flat-white.webp" },
+      { name: "Hot Chocolate", description: "Cream and marshmallows", price: 3.5, image: "/landing/hot-chocolate.webp" },
     ],
   },
   {
-    name: "Tatlılar",
+    name: "Cakes & Bakes",
     items: [
-      { name: "San Sebastian", description: "Çikolata sosu ile", price: 160, image: "/landing/cheesecake.webp" },
-      { name: "Fıstıklı Baklava", description: "Antep fıstığı ile", price: 220, image: "/landing/baklava.webp" },
+      { name: "Scones", description: "Clotted cream and jam", price: 4.5, image: "/landing/scones.webp" },
+      { name: "Victoria Sponge", description: "Strawberry jam and cream", price: 4, image: "/landing/victoria-sponge.webp" },
     ],
   },
 ];
 
 /** Category chips; the one at `active` is highlighted. */
-const CATEGORIES = { names: ["Kahvaltı", "Sıcak İçecekler", "Tatlılar"], active: 1 };
+const CATEGORIES = { names: ["Breakfast", "Hot Drinks", "Cakes & Bakes"], active: 1 };
 
 /** Landing hero illustration: the customer menu inside a phone frame. */
 export function PhoneMockup() {

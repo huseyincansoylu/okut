@@ -1,7 +1,7 @@
 // The demo café's menu, seeded by seed-demo-menu.mts.
 type DemoItem = {
   name: string;
-  /** Decimal string in TRY, e.g. "85.50". */
+  /** Decimal string in GBP, e.g. "3.50". */
   price: string;
   description?: string;
   soldOut?: boolean;
@@ -11,61 +11,86 @@ type DemoItem = {
 
 type DemoMenu = { category: string; items: DemoItem[] }[];
 
-// A typical Turkish café menu, priced in TRY.
+// A typical London café menu, priced in GBP.
 export const menu: DemoMenu = [
   {
-    category: "Kahvaltı",
+    category: "Breakfast",
     items: [
       {
-        name: "Serpme Kahvaltı (2 kişilik)",
-        price: "650",
-        description: "Peynir çeşitleri, zeytin, bal-kaymak, reçel, sucuklu yumurta, sınırsız çay",
-        image: "serpme-kahvalti.webp",
+        name: "Full English Breakfast",
+        price: "12.50",
+        description: "Bacon, sausage, fried eggs, baked beans, grilled tomato, mushrooms and toast",
+        image: "full-english.webp",
       },
-      { name: "Menemen", price: "180", description: "Domates, biber ve köy yumurtası; isteğe göre soğanlı", image: "menemen.webp" },
-      { name: "Sucuklu Yumurta", price: "200", description: "Bakır sahanda kasap sucuk ve iki yumurta" },
-      { name: "Simit Tabağı", price: "120", description: "Taze simit, beyaz peynir, domates, salatalık", image: "simit-tabagi.webp" },
-    ],
-  },
-  {
-    category: "Sıcak İçecekler",
-    items: [
-      { name: "Çay", price: "20", description: "İnce belli bardakta demlik çay", image: "cay.webp" },
-      { name: "Türk Kahvesi", price: "70", description: "Yanında lokum ile", image: "turk-kahvesi.webp" },
-      { name: "Espresso", price: "65" },
-      { name: "Latte", price: "90", description: "Çift shot espresso ve buharla ısıtılmış süt", image: "latte.webp" },
-      { name: "Sahlep", price: "95", description: "Tarçınlı, kış aylarına özel", soldOut: true },
-    ],
-  },
-  {
-    category: "Soğuk İçecekler",
-    items: [
-      { name: "Ev Yapımı Limonata", price: "85", description: "Taze sıkılmış limon ve nane", image: "limonata.webp" },
-      { name: "Iced Latte", price: "100", image: "iced-latte.webp" },
-      { name: "Ayran", price: "40" },
-      { name: "Soda", price: "30" },
-    ],
-  },
-  {
-    category: "Tatlılar",
-    items: [
-      { name: "San Sebastian Cheesecake", price: "160", description: "Çikolata sosu ile servis edilir", image: "cheesecake.webp" },
-      { name: "Fıstıklı Baklava (4 dilim)", price: "220", description: "Antep fıstığı ile", image: "baklava.webp" },
-      { name: "Brownie", price: "120", description: "Sıcak servis, yanında dondurma", image: "brownie.webp" },
-      { name: "Sütlaç", price: "95", description: "Fırında, üzeri fındıklı" },
-    ],
-  },
-  {
-    category: "Atıştırmalıklar",
-    items: [
-      { name: "Kaşarlı Tost", price: "110" },
       {
-        name: "Patates Kızartması",
-        price: "90",
-        description: "Baharatlı, yanında ketçap ve mayonez",
-        image: "patates-kizartmasi.webp",
+        name: "Eggs Benedict",
+        price: "9.50",
+        description: "Poached eggs, ham and hollandaise on a toasted English muffin",
+        image: "eggs-benedict.webp",
       },
-      { name: "Mevsim Salata", price: "130", description: "Akdeniz yeşillikleri, nar ekşili sos" },
+      {
+        name: "Avocado Toast",
+        price: "8.50",
+        description: "Smashed avocado, chilli flakes and a poached egg on sourdough",
+        image: "avocado-toast.webp",
+      },
+      { name: "Bacon Butty", price: "6.00", description: "Crispy back bacon in a soft white roll, with brown sauce or ketchup" },
+    ],
+  },
+  {
+    category: "Hot Drinks",
+    items: [
+      { name: "English Breakfast Tea", price: "2.80", description: "A proper brew, served with milk", image: "breakfast-tea.webp" },
+      { name: "Flat White", price: "3.40", description: "Double ristretto with velvety steamed milk", image: "flat-white.webp" },
+      { name: "Cappuccino", price: "3.30" },
+      { name: "Hot Chocolate", price: "3.50", description: "With whipped cream and marshmallows", image: "hot-chocolate.webp" },
+      { name: "Pumpkin Spice Latte", price: "4.20", description: "Autumn special", soldOut: true },
+    ],
+  },
+  {
+    category: "Cold Drinks",
+    items: [
+      { name: "Homemade Lemonade", price: "3.50", description: "Freshly squeezed lemons and mint" },
+      { name: "Iced Latte", price: "3.80" },
+      { name: "Elderflower Pressé", price: "3.20", description: "Sparkling elderflower, lightly sweet" },
+    ],
+  },
+  {
+    category: "Cakes & Bakes",
+    items: [
+      {
+        name: "Scones with Clotted Cream & Jam",
+        price: "4.50",
+        description: "Two fruit scones, Cornish clotted cream and strawberry jam",
+        image: "scones.webp",
+      },
+      { name: "Victoria Sponge", price: "4.00", description: "Layers of sponge, strawberry jam and cream", image: "victoria-sponge.webp" },
+      {
+        name: "Sticky Toffee Pudding",
+        price: "6.50",
+        description: "Served warm with toffee sauce and vanilla ice cream",
+        image: "sticky-toffee-pudding.webp",
+      },
+      { name: "Carrot Cake", price: "4.00", description: "With cream cheese frosting and walnuts" },
+    ],
+  },
+  {
+    category: "Lunch",
+    items: [
+      {
+        name: "Fish & Chips",
+        price: "14.00",
+        description: "Beer-battered cod, chips, mushy peas and tartare sauce",
+        image: "fish-and-chips.webp",
+      },
+      {
+        name: "Ploughman's Lunch",
+        price: "9.50",
+        description: "Mature cheddar, ham, pickle, apple and crusty bread",
+        image: "ploughmans.webp",
+      },
+      { name: "Jacket Potato with Cheese & Beans", price: "7.50" },
+      { name: "Soup of the Day", price: "6.00", description: "Served with buttered bread" },
     ],
   },
 ];

@@ -8,10 +8,10 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h1 className="font-heading text-3xl font-extrabold tracking-tight">{title}</h1>
-        {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+    <header className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
+      <div className="min-w-0">
+        <h1 className="font-heading text-3xl font-extrabold tracking-tight md:text-4xl">{title}</h1>
+        {description && <p className="mt-1.5 text-muted-foreground">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </header>
@@ -20,20 +20,20 @@ export function PageHeader({
 
 /** Content column shared by dashboard pages. */
 export function PageBody({ children }: { children: React.ReactNode }) {
-  return <main className="flex w-full flex-col gap-6 p-4 md:p-8">{children}</main>;
+  return <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 md:gap-8 md:px-8 md:py-10">{children}</main>;
 }
 
 export function PageSkeleton() {
   return (
     <PageBody>
       <div className="flex animate-pulse flex-col gap-6">
-        <div className="h-8 w-48 rounded-md bg-muted" />
+        <div className="h-9 w-56 rounded-xl bg-muted" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }, (_, i) => (
-            <div key={i} className="h-24 rounded-xl bg-muted" />
+            <div key={i} className="h-28 rounded-3xl bg-muted" />
           ))}
         </div>
-        <div className="h-64 rounded-xl bg-muted" />
+        <div className="h-72 rounded-3xl bg-muted" />
       </div>
     </PageBody>
   );
