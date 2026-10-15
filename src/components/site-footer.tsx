@@ -2,14 +2,12 @@ import Link from "next/link";
 import { dict } from "@/lib/dictionary";
 import { Logo } from "./logo";
 
-const REPO_URL = "https://github.com/huseyincansoylu/okut";
-
 export function SiteFooter() {
   const t = dict.landing;
 
   return (
     <footer className="border-t bg-card">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-3">
           <Link href="/" aria-label="Okut" className="self-start">
             <Logo className="text-xl" />
@@ -26,12 +24,6 @@ export function SiteFooter() {
             <Link href="?auth=login" scroll={false} className="text-muted-foreground hover:text-foreground">
               {dict.common.signIn}
             </Link>
-          </div>
-          <div className="flex flex-col gap-2">
-            <p className="font-medium">{t.footerProject}</p>
-            <a href={REPO_URL} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground">
-              GitHub
-            </a>
           </div>
         </nav>
       </div>

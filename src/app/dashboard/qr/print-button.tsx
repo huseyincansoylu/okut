@@ -6,7 +6,7 @@ import { dict } from "@/lib/dictionary";
 
 export function PrintButton() {
   return (
-    <Button size="sm" onClick={() => window.print()}>
+    <Button onClick={() => window.print()}>
       <PrinterIcon />
       {dict.dashboard.qr.print}
     </Button>

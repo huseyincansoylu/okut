@@ -1,7 +1,6 @@
 "use client";
 
 import { useTransition } from "react";
-import { Trash2Icon } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,29 +10,27 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { dict } from "@/lib/dictionary";
 
+/** Controlled "are you sure?" dialog for deletions, opened from a menu or button elsewhere. */
 export function ConfirmDelete({
+  open,
+  onOpenChange,
   title,
   description,
   onConfirm,
-  label,
 }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   title: string;
   description: string;
   onConfirm: () => Promise<unknown>;
-  label: string;
 }) {
   const [pending, startTransition] = useTransition();
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger render={<Button variant="ghost" size="icon-sm" aria-label={label} />}>
-        <Trash2Icon />
-      </AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -44,7 +41,12 @@ export function ConfirmDelete({
           <AlertDialogAction
             variant="destructive"
             disabled={pending}
-            onClick={() => startTransition(async () => void (await onConfirm()))}
+            onClick={() =>
+              startTransition(async () => {
+                await onConfirm();
+                startTransition(() => onOpenChange(false));
+              })
+            }
           >
             {pending ? dict.common.deleting : dict.common.delete}
           </AlertDialogAction>

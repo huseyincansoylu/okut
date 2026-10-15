@@ -113,7 +113,51 @@ export async function deleteCategory(categoryId: string): Promise<ActionState> {
   return { ok: true };
 }
 
+const idList = z.array(z.uuid()).max(500);
+
+/**
+ * Saves a new category order. `orderedIds` is the full list as shown in the editor;
+ * ids that aren't the shop's are ignored by the WHERE clause.
+ */
+export async function reorderCategories(orderedIds: string[]): Promise<ActionState> {
+  const shopId = await requireShopId();
+  const ids = idList.parse(orderedIds);
+  await db.transaction(async (tx) => {
+    for (const [sortOrder, id] of ids.entries()) {
+      await tx
+        .update(categories)
+        .set({ sortOrder, updatedAt: sql`${categories.updatedAt}` })
+        .where(and(eq(categories.id, id), eq(categories.shopId, shopId)));
+    }
+  });
+  menuChanged(shopId);
+  return { ok: true };
+}
+
 // ---------- Products ----------
+
+/** Saves a new item order within one of the shop's categories. */
+export async function reorderProducts(categoryId: string, orderedIds: string[]): Promise<ActionState> {
+  const shopId = await requireShopId();
+  const ids = idList.parse(orderedIds);
+  const [category] = await db
+    .select({ id: categories.id })
+    .from(categories)
+    .where(and(eq(categories.id, z.uuid().parse(categoryId)), eq(categories.shopId, shopId)));
+  if (!category) return { error: dict.errors.categoryNotFound };
+
+  await db.transaction(async (tx) => {
+    for (const [sortOrder, id] of ids.entries()) {
+      // Keep updated_at: moving an item isn't an edit ("Recently updated" on the overview).
+      await tx
+        .update(products)
+        .set({ sortOrder, updatedAt: sql`${products.updatedAt}` })
+        .where(and(eq(products.id, id), eq(products.categoryId, category.id)));
+    }
+  });
+  menuChanged(shopId);
+  return { ok: true };
+}
 
 function readProduct(formData: FormData) {
   return productSchema.safeParse({
@@ -145,28 +189,38 @@ async function tryUpload(shopId: string, file: File): Promise<{ url: string } | 
 /** Product row scoped to the shop, or undefined if it isn't the owner's. */
 async function findOwnedProduct(productId: string, shopId: string) {
   const [product] = await db
-    .select({ id: products.id, imageUrl: products.imageUrl })
+    .select({ id: products.id, categoryId: products.categoryId, imageUrl: products.imageUrl })
     .from(products)
     .where(and(eq(products.id, productId), inArray(products.categoryId, shopCategoryIds(shopId))));
   return product;
 }
 
-export async function createProduct(
-  categoryId: string,
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
+/** The category picked in the product form, if the shop owns it. */
+async function findOwnedCategory(formData: FormData, shopId: string) {
+  const categoryId = formData.get("categoryId");
+  if (typeof categoryId !== "string" || !z.uuid().safeParse(categoryId).success) return undefined;
+  const [category] = await db
+    .select({ id: categories.id })
+    .from(categories)
+    .where(and(eq(categories.id, categoryId), eq(categories.shopId, shopId)));
+  return category;
+}
+
+/** sort_order that puts a product last in its category. */
+function lastInCategory(categoryId: string) {
+  return sql<number>`(select coalesce(max(${products.sortOrder}), -1) + 1 from ${products} where ${products.categoryId} = ${categoryId})`;
+}
+
+export async function createProduct(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const shopId = await requireShopId();
   const parsed = readProduct(formData);
   if (!parsed.success) return firstIssue(parsed.error);
   const image = readImage(formData);
   if (image.error) return { error: image.error };
 
-  const [category] = await db
-    .select({ id: categories.id })
-    .from(categories)
-    .where(and(eq(categories.id, categoryId), eq(categories.shopId, shopId)));
+  const category = await findOwnedCategory(formData, shopId);
   if (!category) return { error: dict.errors.categoryNotFound };
+  const categoryId = category.id;
 
   let imageUrl: string | null = null;
   if (image.file) {
@@ -179,7 +233,7 @@ export async function createProduct(
       ...parsed.data,
       imageUrl,
       categoryId,
-      sortOrder: sql`(select coalesce(max(${products.sortOrder}), -1) + 1 from ${products} where ${products.categoryId} = ${categoryId})`,
+      sortOrder: lastInCategory(categoryId),
     });
   } catch (error) {
     await removeMenuImages([imageUrl]);
@@ -203,6 +257,10 @@ export async function updateProduct(
 
   const existing = await findOwnedProduct(productId, shopId);
   if (!existing) return { error: dict.errors.productNotFound };
+  const category = await findOwnedCategory(formData, shopId);
+  if (!category) return { error: dict.errors.categoryNotFound };
+  // Moving to another category puts the item at the end of it.
+  const move = category.id === existing.categoryId ? {} : { categoryId: category.id, sortOrder: lastInCategory(category.id) };
 
   let imageUrl = existing.imageUrl;
   if (image.file) {
@@ -216,7 +274,7 @@ export async function updateProduct(
   try {
     await db
       .update(products)
-      .set({ ...parsed.data, imageUrl })
+      .set({ ...parsed.data, ...move, imageUrl })
       .where(eq(products.id, existing.id));
   } catch (error) {
     if (image.file) await removeMenuImages([imageUrl]);
